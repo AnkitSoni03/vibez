@@ -6,6 +6,7 @@ import { login, logout } from "./store/authSlice";
 import { Footer, Header } from './components';
 import Loader from './components/Loader';
 import ErrorBoundary from './components/ErrorBoundary';
+import './App.css';
 
 function App() {
   const [loading, setLoading] = useState(true);
