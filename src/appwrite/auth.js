@@ -45,13 +45,15 @@ export class AuthService {
 
     async getCurrentUser() {
         try {
-            return await this.account.get();
+            const user = await this.account.get();
+            console.log("Fetched User:", user);  // ✅ Debugging step
+            return user;
         } catch (error) {
-            console.error("Appwrite :: getCurrentUser :: error", error);
+            console.error("Appwrite service :: getCurrentUser :: error", error);
             return null;
         }
     }
-
+    
     async logout() {
         try {
             await this.account.deleteSessions();

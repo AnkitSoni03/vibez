@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 import authService from "./appwrite/auth";
 import { login, logout } from "./store/authSlice";
@@ -13,6 +13,9 @@ function App() {
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  // Get userData from Redux
+  const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -20,19 +23,13 @@ function App() {
         setLoading(true);
         setError(null);
         
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(login({ userData }));
-          // Redirect authenticated users away from auth pages
-          if (['/login', '/signup'].includes(window.location.pathname)) {
-            navigate('/');
-          }
+        const user = await authService.getCurrentUser();
+        console.log("Fetched User:", user); 
+        
+        if (user) {
+          dispatch(login(user)); 
         } else {
           dispatch(logout());
-          // Redirect unauthenticated users from protected routes
-          if (['/add-post', '/all-posts'].includes(window.location.pathname)) {
-            navigate('/login');
-          }
         }
       } catch (error) {
         console.error("Authentication error:", error);
@@ -45,11 +42,16 @@ function App() {
 
     checkAuthStatus();
 
-    // Optional: Set up interval to check auth status periodically
-    const intervalId = setInterval(checkAuthStatus, 300000); // 5 minutes
+    const intervalId = setInterval(checkAuthStatus, 300000);
     
     return () => clearInterval(intervalId);
-  }, [dispatch, navigate]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!loading && userData && ['/login', '/signup'].includes(window.location.pathname)) {
+        navigate('/');
+    }
+  }, [loading, userData, navigate]);
 
   if (error) {
     return (

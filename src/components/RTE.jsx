@@ -16,6 +16,7 @@ export default function RTE({ name, control, label, defaultValue = "", darkMode 
         render={({ field: { onChange } }) => (
           <div className={darkMode ? 'dark-editor' : ''}>
             <Editor
+               apiKey='ekv6yc9az2tgv36yhnulgnbodlsqpk2hgim29dbhgjgcnk5z'
               initialValue={defaultValue}
               init={{
                 height: 500,

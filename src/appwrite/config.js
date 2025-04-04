@@ -14,37 +14,43 @@ export class Service {
         this.bucket = new Storage(this.client);
     }
 
-    async createPost({title, slug, content, featuredImage, status, userId}) {
+    async createPost({ Title, Content, "Unique-image": uniqueImage, Status, UserId }) {
         try {
+            if (!Title) throw new Error("Title is required");
+            if (!Content) throw new Error("Content is required");
+            if (!UserId) throw new Error("UserId is required - User might not be authenticated");
+    
+            console.log("Creating post with:", { Title, Content, "Unique-image": uniqueImage, Status, UserId });
+    
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
-                slug,
+                ID.unique(),  // 🔥 Fix: Unique slug generation
                 {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userId,
+                    Title,
+                    Content,
+                    "Unique-image": uniqueImage || null,
+                    Status: Status || "draft",
+                    UserId
                 }
             );
         } catch (error) {
-            console.log("Appwrite service :: createPost :: error", error);
-            return null;
+            console.error("Appwrite service :: createPost :: error", error);
+            throw error;
         }
     }
 
-    async updatePost(slug, {title, content, featuredImage, status}) {
+    async updatePost(slug, { Title, Content, featuredImage, Status }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug,
                 {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
+                    Title,
+                    Content,
+                    "Unique-image": featuredImage,  // 🔥 Fix: JSON key consistency
+                    Status,
                 }
             );
         } catch (error) {
@@ -52,6 +58,7 @@ export class Service {
             return null;
         }
     }
+    
 
     async deletePost(slug) {
         try {
