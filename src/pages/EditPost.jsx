@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import appwriteService from "../appwrite/config";
-import PostForm from "../components/PostForm";
+import PostForm from "../components/post-form/PostForm";
 import Loader from "../components/Loader";
 
 function EditPost() {
