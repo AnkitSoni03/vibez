@@ -9,16 +9,13 @@ export default function ProtectedRoute({ children, authentication = true }) {
     const authStatus = useSelector(state => state.auth.status);
 
     useEffect(() => {
-        // More readable authentication logic
         const isAuthenticated = authStatus === true;
         
         if (authentication) {
-            // Route requires authentication
             if (!isAuthenticated) {
                 navigate('/login', { state: { from: location.pathname } });
             }
         } else {
-            // Route is for non-authenticated users only
             if (isAuthenticated) {
                 navigate('/');
             }

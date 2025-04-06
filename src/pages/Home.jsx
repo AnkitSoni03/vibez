@@ -10,12 +10,15 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const authStatus = useSelector(state => state.auth.status);
+  const userData = useSelector(state => state.auth.userData);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const postsData = await appwriteService.getPosts();
-        setPosts(postsData || []); // Ensure posts is always an array
+        if (!userData?.$id) return;
+
+        const postsData = await appwriteService.getPosts(userData.$id);
+        setPosts(postsData?.documents || []);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
         setError("Failed to load posts. Please try again later.");
@@ -25,7 +28,7 @@ function Home() {
     };
 
     fetchPosts();
-  }, []);
+  }, [userData]);
 
   if (loading) {
     return (
@@ -61,9 +64,7 @@ function Home() {
       >
         <Container>
           <div className="text-center py-16">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Welcome to VIBEZ
-            </h1>
+            <h1 className="text-4xl font-bold text-white mb-4">Welcome to VIBEZ</h1>
             <p className="text-xl text-gray-400 mb-8">
               {authStatus ? "Create your first post!" : "Login to explore and create posts!"}
             </p>
@@ -73,26 +74,11 @@ function Home() {
               </p>
               {!authStatus ? (
                 <div className="flex justify-center space-x-4">
-                  <Link
-                    to="/login"
-                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition"
-                  >
-                    Sign Up
-                  </Link>
+                  <Link to="/login" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Login</Link>
+                  <Link to="/signup" className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Sign Up</Link>
                 </div>
               ) : (
-                <Link
-                  to="/add-post"
-                  className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                >
-                  Create Your First Post
-                </Link>
+                <Link to="/add-post" className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Create Your First Post</Link>
               )}
             </div>
           </div>
@@ -102,22 +88,14 @@ function Home() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-900 py-12"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-900 py-12">
       <Container>
         <h1 className="text-4xl font-bold text-white mb-12 text-center">
           {authStatus ? "Your Feed" : "Latest Posts"}
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
-            <motion.div 
-              key={post.$id} 
-              whileHover={{ y: -5 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div key={post.$id} whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
               <PostCard {...post} />
             </motion.div>
           ))}

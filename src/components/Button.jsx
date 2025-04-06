@@ -24,13 +24,13 @@ const Button = React.forwardRef(({
       className={`
         px-6 py-3 rounded-lg font-medium text-sm md:text-base
         transition-all duration-200
-        ${variants[variant]} ${className}
+        ${variants[variant] || variants.primary} ${className}
         ${disabled || loading ? 'opacity-70 cursor-not-allowed' : ''}
         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
         relative overflow-hidden
       `}
-      whileHover={!(disabled || loading) ? { scale: 1.03 } : {}}
-      whileTap={!(disabled || loading) ? { scale: 0.98 } : {}}
+      whileHover={!(disabled || loading) ? { scale: 1.03 } : false}
+      whileTap={!(disabled || loading) ? { scale: 0.98 } : false}
       {...props}
     >
       {loading && (
@@ -43,7 +43,7 @@ const Button = React.forwardRef(({
   );
 });
 
-// Named exports for button variants
+//Named exports for specific variants
 export const PrimaryButton = (props) => <Button variant="primary" {...props} />;
 export const SecondaryButton = (props) => <Button variant="secondary" {...props} />;
 export const DangerButton = (props) => <Button variant="danger" {...props} />;

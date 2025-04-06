@@ -73,7 +73,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/edit-post/:slug",
+        path: "/edit-post/:id",
         element: (
           <React.Suspense fallback={<div>Loading...</div>}>
             <AuthLayout authentication>
@@ -82,6 +82,7 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
+      
       {
         path: "/post/:slug",
         element: (

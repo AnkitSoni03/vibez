@@ -1,59 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import { Container, PostForm, Loader } from '../components';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import appwriteService from "../appwrite/config";
-import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import PostForm from "../components/PostForm";
+import Loader from "../components/Loader";
 
 function EditPost() {
+  const { id } = useParams(); // post.$id
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { slug } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        if (slug) {
-          const postData = await appwriteService.getPost(slug);
-          if (postData) {
-            setPost(postData);
-          } else {
-            navigate('/');
-          }
-        } else {
-          navigate('/');
+    if (id) {
+      appwriteService.getPost(id).then((res) => {
+        if (res) {
+          setPost(res);
         }
-      } catch (error) {
-        console.error("Failed to fetch post:", error);
-        navigate('/');
-      } finally {
         setLoading(false);
+      });
+    }
+  }, [id]);
+
+  const handleSubmit = async (updatedPost) => {
+    try {
+      const file = updatedPost.image[0]
+        ? await appwriteService.uploadFile(updatedPost.image[0])
+        : null;
+
+      if (file) {
+        // delete old image
+        await appwriteService.deleteFile(post["Unique-image"]);
       }
-    };
 
-    fetchPost();
-  }, [slug, navigate]);
+      const dbPost = await appwriteService.updatePost(id, {
+        Title: updatedPost.title,
+        Content: updatedPost.content,
+        Status: "active",
+        "Unique-image": file ? file.$id : post["Unique-image"],
+      });
 
-  if (loading) {
-    return <Loader />;
+      if (dbPost) {
+        navigate(`/post/${dbPost.$id}`);
+      }
+    } catch (err) {
+      console.error("Error updating post:", err);
+    }
+  };
+
+  if (loading) return <Loader />;
+
+  if (!post) {
+    return <div className="text-center text-red-500 text-xl mt-10">Post not found</div>;
   }
 
-  return post ? (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-900 py-12"
-    >
-      <Container>
-        <div className="max-w-4xl mx-auto p-6 bg-gray-800 rounded-xl shadow-2xl">
-          <h1 className="text-3xl font-bold text-white mb-8 border-b border-indigo-500 pb-2">
-            Edit Post
-          </h1>
-          <PostForm post={post} />
-        </div>
-      </Container>
-    </motion.div>
-  ) : null;
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <h2 className="text-3xl font-bold text-white mb-6 text-center">Edit Post</h2>
+      <PostForm
+        post={{
+          title: post.Title,
+          content: post.Content,
+          image: post["Unique-image"],
+        }}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  );
 }
 
 export default EditPost;
