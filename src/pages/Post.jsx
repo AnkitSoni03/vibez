@@ -50,10 +50,14 @@ function Post() {
         />
         <div className="p-6">
           <h1 className="text-3xl font-bold text-white mb-4">{post.Title}</h1>
-          <p className="text-gray-300 text-lg leading-relaxed whitespace-pre-line">
-            {post.Content}
-          </p>
 
+          {/* ✅ HTML content rendered with styling */}
+          <div
+            className="text-gray-300 text-lg leading-relaxed mt-4 prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: post?.Content }}
+          />
+
+          {/* ✅ Show Edit/Delete only to owner */}
           {userData && userData.$id === post.UserId && (
             <div className="mt-6 flex gap-4">
               <Link to={`/edit-post/${post.$id}`}>
