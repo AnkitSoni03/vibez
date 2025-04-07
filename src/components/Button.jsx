@@ -16,6 +16,10 @@ const Button = React.forwardRef(({
     danger: "bg-red-600 hover:bg-red-700 text-white"
   };
 
+  // ✅ Remove unsupported props (like bgColor) before passing to DOM
+  const safeProps = { ...props };
+  delete safeProps.bgColor;
+
   return (
     <motion.button
       ref={ref}
@@ -31,7 +35,7 @@ const Button = React.forwardRef(({
       `}
       whileHover={!(disabled || loading) ? { scale: 1.03 } : false}
       whileTap={!(disabled || loading) ? { scale: 0.98 } : false}
-      {...props}
+      {...safeProps}
     >
       {loading && (
         <span className="absolute inset-0 flex items-center justify-center">
@@ -43,7 +47,7 @@ const Button = React.forwardRef(({
   );
 });
 
-//Named exports for specific variants
+// Named exports for specific variants
 export const PrimaryButton = (props) => <Button variant="primary" {...props} />;
 export const SecondaryButton = (props) => <Button variant="secondary" {...props} />;
 export const DangerButton = (props) => <Button variant="danger" {...props} />;

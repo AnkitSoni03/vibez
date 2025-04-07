@@ -78,7 +78,10 @@ export default function PostForm({ post }) {
           "Unique-image": file.$id,
           Status: data.Status,
           UserId: userData.$id,
+          UserName: userData.name,
+          UserEmail: userData.email,
         });
+        
 
         if (newPost) {
           navigate(`/post/${newPost.$id}`);

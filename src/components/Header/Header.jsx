@@ -3,9 +3,11 @@ import { Container, Logo, LogoutBtn } from '../index';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
+import { Bell } from 'lucide-react'; // 🔔 icon
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
+  const userData = useSelector((state) => state.auth.userData); // 👤 user info
   const navigate = useNavigate();
 
   const navItems = [
@@ -45,12 +47,15 @@ function Header() {
     >
       <Container>
         <nav className="flex items-center justify-between h-16">
+          {/* Left: Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Logo width="40px" darkMode />
             <span className="text-xl font-bold text-white hidden sm:inline">VIBEZ</span>
           </Link>
-          
-          <div className="hidden md:flex items-center space-x-2">
+
+          {/* Right: Navigation */}
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Navigation Buttons */}
             {navItems.map((item) =>
               item.active ? (
                 <motion.button
@@ -68,10 +73,29 @@ function Header() {
                 </motion.button>
               ) : null
             )}
+
+            {/* 🔔 Notification Icon */}
+            {authStatus && (
+              <button className="relative text-gray-300 hover:text-white">
+                <Bell className="w-5 h-5" />
+                {/* Badge (Notification Count) */}
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                  0
+                </span>
+              </button>
+            )}
+
+            {/* 👤 User Info */}
+            {authStatus && (
+              <div className="text-xs text-gray-400 text-left">
+                <p className="font-semibold">{userData?.name || 'No Name'}</p>
+                <p>{userData?.email}</p>
+              </div>
+            )}
+
+            {/* 🚪 Logout */}
             {authStatus && <LogoutBtn />}
           </div>
-          
-          {/* Mobile menu button would go here */}
         </nav>
       </Container>
     </motion.header>
