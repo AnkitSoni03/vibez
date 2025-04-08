@@ -1,14 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Logo, LogoutBtn } from '../index';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { Bell } from 'lucide-react'; // 🔔 icon
+import { Bell } from 'lucide-react';
+import appwriteService from '../../appwrite/config';
+import { formatDistanceToNow } from 'date-fns';
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
-  const userData = useSelector((state) => state.auth.userData); // 👤 user info
+  const userData = useSelector((state) => state.auth.userData);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authStatus && userData?.$id) {
+      const fetchNotifications = async () => {
+        const response = await appwriteService.getUserNotifications(userData.$id);
+        setNotifications(response.documents || []);
+      };
+      fetchNotifications();
+    }
+  }, [authStatus, userData]);
+
+  const handleNotificationClick = async (notification) => {
+    await appwriteService.markNotificationAsRead(notification.$id);
+    navigate(`/post/${notification.postId}`);
+    setShowNotifications(false);
+  };
 
   const navItems = [
     {
@@ -49,6 +69,7 @@ function Header() {
         <nav className="flex items-center justify-between h-16">
           {/* Left: Logo */}
           <Link to="/" className="flex items-center space-x-2">
+            <img src="./vibez-logo.png" alt="logo" className='w-10 h-10 object-contain rounded-md shadow-md'/>
             <Logo width="40px" darkMode />
             <span className="text-xl font-bold text-white hidden sm:inline">VIBEZ</span>
           </Link>
@@ -74,15 +95,52 @@ function Header() {
               ) : null
             )}
 
-            {/* 🔔 Notification Icon */}
+            {/* 🔔 Notification Icon with dropdown */}
             {authStatus && (
-              <button className="relative text-gray-300 hover:text-white">
-                <Bell className="w-5 h-5" />
-                {/* Badge (Notification Count) */}
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                  0
-                </span>
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative text-gray-300 hover:text-white p-1"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notifications.filter(n => !n.read).length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                      {notifications.filter(n => !n.read).length}
+                    </span>
+                  )}
+                </button>
+
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-72 bg-gray-800 rounded-lg shadow-xl border border-gray-700 max-h-96 overflow-y-auto">
+                    <div className="p-3 border-b border-gray-700 flex justify-between items-center">
+                      <h3 className="font-bold text-white">Notifications</h3>
+                      <button 
+                        onClick={() => setShowNotifications(false)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    
+                    {notifications.length === 0 ? (
+                      <p className="p-4 text-gray-400 text-center">No notifications yet</p>
+                    ) : (
+                      notifications.map(notification => (
+                        <div 
+                          key={notification.$id} 
+                          className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${!notification.read ? 'bg-gray-750' : ''}`}
+                          onClick={() => handleNotificationClick(notification)}
+                        >
+                          <p className="text-sm text-white">{notification.message}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {formatDistanceToNow(new Date(notification.$createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
             )}
 
             {/* 👤 User Info */}

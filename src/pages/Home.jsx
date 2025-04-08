@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import appwriteService from "../appwrite/config";
 import { Container, PostCard, Loader } from '../components';
 import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { PlusCircle, RefreshCw, Search, User, Settings, Bell, Home as HomeIcon } from 'lucide-react';
 
 function Home() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  
   const authStatus = useSelector(state => state.auth.status);
   const userData = useSelector(state => state.auth.userData);
 
@@ -16,7 +21,7 @@ function Home() {
     const fetchPosts = async () => {
       try {
         if (!userData?.$id) return;
-
+        setLoading(true);
         const postsData = await appwriteService.getPosts(userData.$id);
         setPosts(postsData?.documents || []);
       } catch (error) {
@@ -26,13 +31,40 @@ function Home() {
         setLoading(false);
       }
     };
-
+    
     fetchPosts();
   }, [userData]);
 
+  const handleRefresh = async () => {
+    if (!userData?.$id) return;
+    setLoading(true);
+    try {
+      const postsData = await appwriteService.getPosts(userData.$id);
+      setPosts(postsData?.documents || []);
+      setError(null);
+    } catch (error) {
+      console.error("Failed to refresh posts:", error);
+      setError("Failed to refresh posts. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredPosts = posts.filter(post => 
+    post.Title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.Content.toLowerCase().includes(searchQuery.toLowerCase())
+  ).sort((a, b) => {
+    if (activeTab === 'latest') {
+      return new Date(b.$createdAt) - new Date(a.$createdAt);
+    } else if (activeTab === 'popular') {
+      return (b.likes || 0) - (a.likes || 0);
+    }
+    return 0;
+  });
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black">
         <Loader size="lg" />
       </div>
     );
@@ -40,17 +72,22 @@ function Home() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center p-8 bg-gray-800 rounded-lg max-w-md">
-          <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center p-8 bg-gray-800/80 backdrop-blur-sm rounded-xl max-w-md border border-gray-700/50 shadow-xl"
+        >
+          <h2 className="text-2xl font-bold text-red-400 mb-4">Error</h2>
           <p className="text-gray-300 mb-6">{error}</p>
           <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700 text-white"
+            onClick={handleRefresh}
+            className="px-6 py-2.5 bg-indigo-600 rounded-lg hover:bg-indigo-700 text-white flex items-center justify-center gap-2 mx-auto transition-colors"
           >
-            Retry
+            <RefreshCw size={18} />
+            <span>Retry</span>
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -60,47 +97,230 @@ function Home() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-gray-900 py-12"
+        className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 md:py-12"
       >
         <Container>
-          <div className="text-center py-16">
-            <h1 className="text-4xl font-bold text-white mb-4">Welcome to VIBEZ</h1>
-            <p className="text-xl text-gray-400 mb-8">
+          <div className="text-center py-8 md:py-16">
+            <motion.h1 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl md:text-5xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-500"
+            >
+              Welcome to VIBEZ
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg md:text-xl text-gray-400 mb-8"
+            >
               {authStatus ? "Create your first post!" : "Login to explore and create posts!"}
-            </p>
-            <div className="bg-gray-800 p-8 rounded-xl max-w-2xl mx-auto">
-              <p className="text-gray-300 mb-6">
-                Share your thoughts, ideas, and creativity with the community.
+            </motion.p>
+            
+            <motion.div 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="bg-gray-800/80 backdrop-blur-sm p-6 md:p-8 rounded-xl max-w-2xl mx-auto border border-gray-700/50 shadow-xl"
+            >
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <User size={32} className="text-white" />
+                </div>
+              </div>
+              
+              <p className="text-gray-300 mb-8 max-w-md mx-auto">
+                Share your thoughts, ideas, and creativity with the community. Connect with like-minded people and explore a world of inspiration.
               </p>
+              
               {!authStatus ? (
-                <div className="flex justify-center space-x-4">
-                  <Link to="/login" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Login</Link>
-                  <Link to="/signup" className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">Sign Up</Link>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <Link to="/login" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-center">
+                    Login
+                  </Link>
+                  <Link to="/signup" className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-center">
+                    Sign Up
+                  </Link>
                 </div>
               ) : (
-                <Link to="/add-post" className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Create Your First Post</Link>
+                <Link to="/add-post" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all">
+                  <PlusCircle size={20} />
+                  <span>Create Your First Post</span>
+                </Link>
               )}
-            </div>
+            </motion.div>
           </div>
         </Container>
+        
+        {/* Mobile Action Buttons */}
+        {authStatus && (
+          <div className="fixed bottom-6 right-6 md:hidden">
+            <Link 
+              to="/add-post"
+              className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50 transition-all"
+            >
+              <PlusCircle size={24} />
+            </Link>
+          </div>
+        )}
+        
+        {/* Mobile Navigation */}
+        {authStatus && (
+          <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
+            <div className="flex justify-around items-center h-16">
+              <Link to="/" className="flex flex-col items-center text-indigo-500">
+                <HomeIcon size={20} />
+                <span className="text-xs mt-1">Home</span>
+              </Link>
+              <Link to="/search" className="flex flex-col items-center text-gray-400">
+                <Search size={20} />
+                <span className="text-xs mt-1">Search</span>
+              </Link>
+              <Link to="/add-post" className="flex flex-col items-center text-gray-400">
+                <PlusCircle size={20} />
+                <span className="text-xs mt-1">Create</span>
+              </Link>
+              <Link to="/notifications" className="flex flex-col items-center text-gray-400">
+                <Bell size={20} />
+                <span className="text-xs mt-1">Alerts</span>
+              </Link>
+              <Link to="/profile" className="flex flex-col items-center text-gray-400">
+                <User size={20} />
+                <span className="text-xs mt-1">Profile</span>
+              </Link>
+            </div>
+          </div>
+        )}
       </motion.div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gray-900 py-12">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-4 pb-20 md:pb-12"
+    >
       <Container>
-        <h1 className="text-4xl font-bold text-white mb-12 text-center">
+        {/* Tab Navigation */}
+        <div className="flex justify-around mb-6 border-b border-gray-800 sticky top-16 bg-gray-900/95 backdrop-blur-sm z-10 -mx-4 px-4">
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`px-4 py-3 font-medium relative ${
+              activeTab === 'all' 
+                ? 'text-indigo-400' 
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            All Posts
+            {activeTab === 'all' && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+              />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('latest')}
+            className={`px-4 py-3 font-medium relative ${
+              activeTab === 'latest' 
+                ? 'text-indigo-400' 
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            Latest
+            {activeTab === 'latest' && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+              />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('popular')}
+            className={`px-4 py-3 font-medium relative ${
+              activeTab === 'popular' 
+                ? 'text-indigo-400' 
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            Popular
+            {activeTab === 'popular' && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+              />
+            )}
+          </button>
+        </div>
+
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8">
           {authStatus ? "Your Feed" : "Latest Posts"}
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <motion.div key={post.$id} whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
-              <PostCard {...post} />
-            </motion.div>
-          ))}
-        </div>
+        
+        {filteredPosts.length === 0 ? (
+          <div className="bg-gray-800/50 rounded-xl p-8 text-center border border-gray-700/50">
+            <Search size={32} className="mx-auto mb-4 text-gray-500" />
+            <h2 className="text-xl font-semibold text-white mb-2">No matching posts found</h2>
+            <p className="text-gray-400">Try adjusting your search or explore different categories</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <AnimatePresence>
+              {filteredPosts.map((post) => (
+                <motion.div 
+                  key={post.$id} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  whileHover={{ y: -5 }} 
+                  transition={{ duration: 0.2 }}
+                >
+                  <PostCard {...post} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </Container>
+      
+      {/* Mobile Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
+        <div className="flex justify-around items-center h-16">
+          <Link to="/" className="flex flex-col items-center text-indigo-500">
+            <HomeIcon size={20} />
+            <span className="text-xs mt-1">Home</span>
+          </Link>
+          <Link to="/search" className="flex flex-col items-center text-gray-400">
+            <Search size={20} />
+            <span className="text-xs mt-1">Search</span>
+          </Link>
+          <Link to="/add-post" className="flex flex-col items-center text-gray-400">
+            <PlusCircle size={20} />
+            <span className="text-xs mt-1">Create</span>
+          </Link>
+          <Link to="/notifications" className="flex flex-col items-center text-gray-400">
+            <Bell size={20} />
+            <span className="text-xs mt-1">Alerts</span>
+          </Link>
+          <Link to="/profile" className="flex flex-col items-center text-gray-400">
+            <User size={20} />
+            <span className="text-xs mt-1">Profile</span>
+          </Link>
+        </div>
+      </div>
+      
+      {/* Create Post Floating Button (mobile only) */}
+      <div className="fixed bottom-20 right-4 md:hidden">
+        <button 
+          onClick={handleRefresh}
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-800 text-gray-200 shadow-lg hover:text-white transition-all"
+        >
+          <RefreshCw size={20} />
+        </button>
+      </div>
     </motion.div>
   );
 }

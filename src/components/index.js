@@ -13,4 +13,3 @@ export { default as PostForm } from "./post-form/PostForm";
 export { default as PostCard } from "./PostCard";
 export { default as AuthLayout } from "./AuthLayout";
 export { default as Input } from "./Input";
-export { default as Preloader } from "./Preloader";

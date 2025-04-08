@@ -16,7 +16,7 @@ const Button = React.forwardRef(({
     danger: "bg-red-600 hover:bg-red-700 text-white"
   };
 
-  // ✅ Remove unsupported props (like bgColor) before passing to DOM
+  // Remove unsupported props (like bgColor) before passing to DOM
   const safeProps = { ...props };
   delete safeProps.bgColor;
 
