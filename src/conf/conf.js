@@ -6,5 +6,5 @@ export default {
   appwriteBucketId: String(import.meta.env.VITE_APPWRITE_BUCKET_ID),
   likesCollectionId: String(import.meta.env.VITE_APPWRITE_LIKES_COLLECTION_ID),
   appwriteCommentsCollectionId: String(import.meta.env.VITE_APPWRITE_COMMENTS_COLLECTION_ID),
-  notificationsCollectionId: String(import.meta.env.VITE_APPWRITE_NOTIFICATIONS_COLLECTION_ID),
+  appwriteNotificationsCollectionId: String(import.meta.env.VITE_APPWRITE_NOTIFICATIONS_COLLECTION_ID),
 };

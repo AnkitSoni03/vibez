@@ -5,7 +5,7 @@ import appwriteService from '../appwrite/config';
 import { 
   Heart, MessageCircle, User, MoreVertical, 
   ArrowLeft, Send, PlusCircle, Camera, Share2, 
-  Bookmark, BookmarkCheck, X
+  Bookmark, BookmarkCheck, X, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-hot-toast';
@@ -19,6 +19,7 @@ function AllPosts() {
   const [loading, setLoading] = useState(true);
   const [commentTexts, setCommentTexts] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({});
+  const [expandedContents, setExpandedContents] = useState({});
   const [userLikes, setUserLikes] = useState({});
   const [savedPosts, setSavedPosts] = useState([]);
   const [activeTab, setActiveTab] = useState('latest');
@@ -26,6 +27,7 @@ function AllPosts() {
   const [menuOpen, setMenuOpen] = useState(null);
   
   const commentInputRefs = useRef({});
+  const contentRefs = useRef({});
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
 
@@ -80,6 +82,30 @@ function AllPosts() {
 
     fetchData();
   }, [userData, navigate]);
+
+  // Check for content height after posts are loaded
+  useEffect(() => {
+    const checkContentHeight = () => {
+      posts.forEach(post => {
+        const contentElement = contentRefs.current[post.$id];
+        if (contentElement) {
+          const lineHeight = parseInt(getComputedStyle(contentElement).lineHeight);
+          const height = contentElement.clientHeight;
+          const lines = Math.round(height / lineHeight);
+          
+          // If content has more than 2 lines and isn't already expanded
+          if (lines > 2 && !expandedContents[post.$id]) {
+            contentElement.classList.add('line-clamp-2');
+          }
+        }
+      });
+    };
+
+    if (!loading && posts.length > 0) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(checkContentHeight, 100);
+    }
+  }, [posts, loading, expandedContents]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -199,6 +225,13 @@ function AllPosts() {
     }, 100);
   };
 
+  const toggleContentExpansion = (postId) => {
+    setExpandedContents(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
+
   const toggleMenu = (postId, e) => {
     e.stopPropagation();
     setMenuOpen(prev => prev === postId ? null : postId);
@@ -237,11 +270,23 @@ function AllPosts() {
 
   if (loading) return <Loader />;
 
+  // Function to check if content needs "Read more" button
+  const contentNeedsExpansion = (postId) => {
+    const contentElement = contentRefs.current[postId];
+    if (!contentElement) return false;
+    
+    const lineHeight = parseInt(getComputedStyle(contentElement).lineHeight) || 24;
+    const height = contentElement.scrollHeight;
+    const lines = Math.round(height / lineHeight);
+    
+    return lines > 2;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-gray-100">
       {/* Fixed Header */}
       <div className="sticky top-0 z-10 backdrop-blur-md bg-gray-900/90 border-b border-gray-800 shadow-md">
-        <Container>
+        <div className="w-full max-w-[50rem] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <button 
               onClick={() => navigate(-1)} 
@@ -263,11 +308,11 @@ function AllPosts() {
               </Link>
             )}
           </div>
-        </Container>
+        </div>
       </div>
 
       {/* Search Bar */}
-      <Container>
+      <div className='w-full max-w-[50rem] mx-auto px-4 sm:px-6 lg:px-8'>
         <div className="pt-4 pb-2">
           <div className="relative">
             <input
@@ -321,10 +366,10 @@ function AllPosts() {
             </button>
           </div>
         </div>
-      </Container>
+      </div>
 
       {/* Main Content */}
-      <Container>
+      <div className='w-full max-w-[50rem] mx-auto px-4 sm:px-6 lg:px-8'>
         <div className="py-4 space-y-6">
           {filteredPosts.length === 0 ? (
             <div className="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700">
@@ -467,8 +512,36 @@ function AllPosts() {
                   {/* Post Content */}
                   <div className="p-4">
                     <h2 className="text-xl font-bold text-white mb-3">{post.Title}</h2>
-                    <div className="prose prose-invert max-w-none text-gray-300">
-                      {parse(post.Content || '')}
+                    
+                    {/* Content with Read More functionality */}
+                    <div className="relative">
+                      <div 
+                        ref={el => contentRefs.current[post.$id] = el}
+                        className={`prose prose-invert max-w-none text-gray-300 transition-all duration-300 overflow-hidden ${
+                          expandedContents[post.$id] ? '' : 'line-clamp-2'
+                        }`}
+                      >
+                        {parse(post.Content || '')}
+                      </div>
+                      
+                      {/* Read More / See Less Button */}
+                      {contentRefs.current[post.$id] && contentRefs.current[post.$id].scrollHeight > 
+                        (parseInt(getComputedStyle(contentRefs.current[post.$id]).lineHeight) * 2) && (
+                        <button
+                          onClick={() => toggleContentExpansion(post.$id)}
+                          className="mt-1 flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium"
+                        >
+                          {expandedContents[post.$id] ? (
+                            <>
+                              See less <ChevronUp size={16} />
+                            </>
+                          ) : (
+                            <>
+                              Read more <ChevronDown size={16} />
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                     
                     {post["Unique-image"] && (
@@ -631,7 +704,7 @@ function AllPosts() {
             </AnimatePresence>
           )}
         </div>
-      </Container>
+      </div>
 
       {/* Create Post Floating Button (mobile only) */}
       {userData && (
@@ -644,6 +717,7 @@ function AllPosts() {
           </Link>
         </div>
       )}
+      
 
       {/* Custom CSS for animations */}
       <style jsx>{`
