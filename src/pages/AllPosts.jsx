@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import appwriteService from "../appwrite/config";
 import {
@@ -23,6 +22,7 @@ import { toast } from "react-hot-toast";
 import Loader from "../components/Loader";
 import parse from "html-react-parser";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function AllPosts() {
   const [posts, setPosts] = useState([]);
@@ -40,6 +40,33 @@ function AllPosts() {
   const contentRefs = useRef({});
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
+  const location = useLocation();
+  const [highlightedPost, setHighlightedPost] = useState(null);
+  const postRefs = useRef({});
+
+  useEffect(() => {
+    if (location.state?.scrollToPost && posts.length > 0) {
+      const postId = location.state.scrollToPost;
+      const postElement = postRefs.current[postId];
+
+      if (postElement) {
+        postElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHighlightedPost(postId);
+
+        // Automatically expand comments if notification type is comment
+        if (location.state.notificationType === "comment") {
+          setExpandedPosts((prev) => ({ ...prev, [postId]: true }));
+        }
+
+        setTimeout(() => {
+          setHighlightedPost(null);
+        }, 3000);
+      }
+
+      // Clear navigation state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [posts, location.state]);
 
   useEffect(() => {
     if (!userData) {
@@ -433,11 +460,16 @@ function AllPosts() {
               {filteredPosts.map((post) => (
                 <motion.div
                   key={post.$id}
+                  ref={(el) => (postRefs.current[post.$id] = el)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-gray-800/70 rounded-xl overflow-hidden shadow-lg hover:shadow-indigo-900/20 transition-all border border-gray-700/50"
+                  className={`bg-gray-800/70 rounded-xl overflow-hidden shadow-lg hover:shadow-indigo-900/20 transition-all border border-gray-700/50 ${
+                    highlightedPost === post.$id
+                      ? "ring-2 ring-indigo-500 animate-pulse-fast"
+                      : ""
+                  }`}
                 >
                   {/* Post Header */}
                   <div className="p-4 border-b border-gray-700/50 flex justify-between items-center">
@@ -829,6 +861,17 @@ function AllPosts() {
           background-color: #1a1f2c;
         }
      `}</style>
+
+      <style>{`
+  @keyframes pulse-fast {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+  .animate-pulse-fast {
+    animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+`}</style>
     </div>
   );
 }

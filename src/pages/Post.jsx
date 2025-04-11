@@ -116,6 +116,11 @@ function Post() {
               >
                 Delete Post
               </Button>
+              <Link to={`/all-posts`} className="block">
+                <Button className="bg-green-600 hover:bg-green-700 text-white px-6">
+                  Done
+                </Button>
+              </Link>
             </div>
           )}
         </div>

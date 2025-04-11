@@ -49,16 +49,17 @@ function Header() {
             }
           }
 
-          // Handle read status updates
           if (
             response.events.includes(
               "databases.*.collections.*.documents.*.update"
             )
           ) {
             const updatedNotif = response.payload;
-            setNotifications((prev) =>
-              prev.map((n) => (n.$id === updatedNotif.$id ? updatedNotif : n))
-            );
+            if (updatedNotif.userId === userData.$id) {
+              setNotifications((prev) =>
+                prev.map((n) => (n.$id === updatedNotif.$id ? updatedNotif : n))
+              );
+            }
           }
         });
       } catch (error) {
@@ -86,12 +87,18 @@ function Header() {
           )
         );
       }
-      navigate(`/post/${notification.postId}`);
+      setShowNotifications(false);
+
+      navigate("/all-posts", {
+        state: {
+          scrollToPost: notification.postId,
+          highlightPost: notification.postId,
+          notificationType: notification.type,
+        },
+      });
     } catch (error) {
       console.error("Notification click error:", error);
       toast.error("Failed to update notification");
-    } finally {
-      setShowNotifications(false);
     }
   };
 
@@ -219,8 +226,10 @@ function Header() {
                           <div
                             key={notification.$id}
                             className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${
-                              !notification.read ? "bg-gray-700" : ""
-                            }`}
+                              !notification.read
+                                ? "bg-gray-700/50"
+                                : "bg-gray-800"
+                            } transition-colors`}
                             onClick={() =>
                               handleNotificationClick(notification)
                             }
