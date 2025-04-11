@@ -1,6 +1,6 @@
-import React from 'react';
-import { Login as LoginComponent } from '../components';
-import { motion } from 'framer-motion';
+import React from "react";
+import { Login as LoginComponent } from "../components";
+import { motion } from "framer-motion";
 
 function Login() {
   return (
@@ -16,7 +16,7 @@ function Login() {
         <LoginComponent />
         <div className="mt-6 text-center">
           <p className="text-gray-400">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <a href="/signup" className="text-indigo-400 hover:text-indigo-300">
               Sign up
             </a>

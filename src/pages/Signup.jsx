@@ -1,6 +1,6 @@
-import React from 'react';
-import { Signup as SignupComponent } from '../components';
-import { motion } from 'framer-motion';
+import React from "react";
+import { Signup as SignupComponent } from "../components";
+import { motion } from "framer-motion";
 
 function Signup() {
   return (
@@ -16,7 +16,7 @@ function Signup() {
         <SignupComponent />
         <div className="mt-6 text-center">
           <p className="text-gray-400">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a href="/login" className="text-indigo-400 hover:text-indigo-300">
               Login
             </a>

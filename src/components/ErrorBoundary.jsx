@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
@@ -24,13 +24,13 @@ export default class ErrorBoundary extends React.Component {
             Something went wrong
           </h2>
           <p className="text-gray-300 mb-6">
-            {this.state.error?.message || 'Please try again later'}
+            {this.state.error?.message || "Please try again later"}
           </p>
           <button
             onClick={this.handleReset}
             className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
           >
-            {this.props.resetText || 'Try Again'}
+            {this.props.resetText || "Try Again"}
           </button>
         </div>
       );

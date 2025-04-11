@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 import authService from "./appwrite/auth";
 import { login, logout } from "./store/authSlice";
-import { Footer, Header } from './components';
-import Loader from './components/Loader';
-import ErrorBoundary from './components/ErrorBoundary';
-import './App.css';
+import { Footer, Header } from "./components";
+import Loader from "./components/Loader";
+import ErrorBoundary from "./components/ErrorBoundary";
+import "./App.css";
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   // Get userData from Redux
   const userData = useSelector((state) => state.auth.userData);
 
@@ -22,12 +22,12 @@ function App() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const user = await authService.getCurrentUser();
-        console.log("Fetched User:", user); 
-        
+        console.log("Fetched User:", user);
+
         if (user) {
-          dispatch(login(user)); 
+          dispatch(login(user));
         } else {
           dispatch(logout());
         }
@@ -43,13 +43,17 @@ function App() {
     checkAuthStatus();
 
     const intervalId = setInterval(checkAuthStatus, 300000);
-    
+
     return () => clearInterval(intervalId);
   }, [dispatch]);
 
   useEffect(() => {
-    if (!loading && userData && ['/login', '/signup'].includes(window.location.pathname)) {
-        navigate('/');
+    if (
+      !loading &&
+      userData &&
+      ["/login", "/signup"].includes(window.location.pathname)
+    ) {
+      navigate("/");
     }
   }, [loading, userData, navigate]);
 
@@ -57,7 +61,9 @@ function App() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900 p-4">
         <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold text-red-500 mb-4">Authentication Error</h2>
+          <h2 className="text-2xl font-bold text-red-500 mb-4">
+            Authentication Error
+          </h2>
           <p className="text-gray-300 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}

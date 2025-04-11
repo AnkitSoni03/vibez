@@ -1,22 +1,21 @@
-import ErrorBoundary from './components/ErrorBoundary';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import App from './App.jsx';
-import './index.css';
-import store from './store/store.js';
-
+import ErrorBoundary from "./components/ErrorBoundary";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import App from "./App.jsx";
+import "./index.css";
+import store from "./store/store.js";
 
 // Lazy load pages for better performance
-const Home = React.lazy(() => import('./pages/Home'));
-const Login = React.lazy(() => import('./components/Login'));
-const Signup = React.lazy(() => import('./components/Signup'));
-const AllPosts = React.lazy(() => import('./pages/AllPosts'));
-const AddPost = React.lazy(() => import('./pages/AddPost'));
-const EditPost = React.lazy(() => import('./pages/EditPost'));
-const Post = React.lazy(() => import('./pages/Post'));
-const AuthLayout = React.lazy(() => import('./components/AuthLayout'));
+const Home = React.lazy(() => import("./pages/Home"));
+const Login = React.lazy(() => import("./components/Login"));
+const Signup = React.lazy(() => import("./components/Signup"));
+const AllPosts = React.lazy(() => import("./pages/AllPosts"));
+const AddPost = React.lazy(() => import("./pages/AddPost"));
+const EditPost = React.lazy(() => import("./pages/EditPost"));
+const Post = React.lazy(() => import("./pages/Post"));
+const AuthLayout = React.lazy(() => import("./components/AuthLayout"));
 
 const router = createBrowserRouter([
   {
@@ -24,7 +23,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorBoundary />, // Add this
     children: [
-        {
+      {
         path: "/",
         element: (
           <React.Suspense fallback={<div>Loading...</div>}>
@@ -82,7 +81,7 @@ const router = createBrowserRouter([
           </React.Suspense>
         ),
       },
-      
+
       {
         path: "/post/:slug",
         element: (
@@ -95,7 +94,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />

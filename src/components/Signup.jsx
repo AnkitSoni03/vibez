@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import authService from '../appwrite/auth';
-import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../store/authSlice';
-import { Button, Input, Logo } from './index';
-import { useDispatch } from 'react-redux';
-import { useForm } from 'react-hook-form';
-import { motion } from 'framer-motion';
+import React, { useState } from "react";
+import authService from "../appwrite/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../store/authSlice";
+import { Button, Input, Logo } from "./index";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
 
 function Signup() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const create = async (data) => {
     setError("");
@@ -48,7 +52,7 @@ function Signup() {
             Create your account
           </h2>
           <p className="mt-2 text-gray-400 text-center">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link
               to="/login"
               className="text-indigo-400 hover:text-indigo-300 transition-colors"
@@ -73,8 +77,8 @@ function Signup() {
               required: "Name is required",
               minLength: {
                 value: 3,
-                message: "Name must be at least 3 characters"
-              }
+                message: "Name must be at least 3 characters",
+              },
             })}
             darkMode
           />
@@ -88,8 +92,8 @@ function Signup() {
               required: "Email is required",
               pattern: {
                 value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                message: "Please enter a valid email address"
-              }
+                message: "Please enter a valid email address",
+              },
             })}
             darkMode
           />
@@ -103,8 +107,8 @@ function Signup() {
               required: "Password is required",
               minLength: {
                 value: 8,
-                message: "Password must be at least 8 characters"
-              }
+                message: "Password must be at least 8 characters",
+              },
             })}
             darkMode
           />
@@ -120,15 +124,8 @@ function Signup() {
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-400">
-          By creating an account, you agree to our{' '}
-          <Link to="/terms" className="text-indigo-400 hover:underline">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link to="/privacy" className="text-indigo-400 hover:underline">
-            Privacy Policy
-          </Link>
-          .
+          By creating an account, you agree to our Terms of Service an Privacy
+          Policy.
         </div>
       </div>
     </motion.div>

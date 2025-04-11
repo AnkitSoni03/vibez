@@ -154,32 +154,12 @@ export class Service {
   // Add these methods to your Service class in config.js
 
 // ------------------- NOTIFICATIONS -------------------
-createNotification = async ({ userId, type, message, postId, commentId = null }) => {
-  try {
-    return await this.databases.createDocument(
-      conf.appwriteDatabaseId,
-      'notifications', // Make sure this collection exists
-      ID.unique(),
-      {
-        userId,
-        type,
-        message,
-        postId,
-        commentId,
-        read: false,
-      }
-    );
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    throw error;
-  }
-};
-
+// Update the getUserNotifications method in config.js
 getUserNotifications = async (userId) => {
   try {
     return await this.databases.listDocuments(
       conf.appwriteDatabaseId,
-      'notifications',
+      conf.appwriteNotificationsCollectionId, // Use config variable
       [
         Query.equal('userId', userId),
         Query.orderDesc('$createdAt'),
@@ -192,6 +172,28 @@ getUserNotifications = async (userId) => {
   }
 };
 
+// Update createNotification method
+createNotification = async ({ userId, type, message, postId, commentId = null }) => {
+  try {
+    return await this.databases.createDocument(
+      conf.appwriteDatabaseId,
+      conf.appwriteNotificationsCollectionId, // Use config variable
+      ID.unique(),
+      {
+        userId,
+        type,
+        message,
+        postId,
+        commentId,
+        read: false,
+        timestamp: new Date().toISOString()
+      }
+    );
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    throw error;
+  }
+};
 markNotificationAsRead = async (notificationId) => {
   try {
     return await this.databases.updateDocument(
@@ -263,10 +265,6 @@ markNotificationAsRead = async (notificationId) => {
       return { documents: [] };
     }
   };
-
-
-
-  
 }
 
 const appwriteService = new Service();

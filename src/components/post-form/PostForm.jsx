@@ -6,12 +6,24 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { ImagePlus, Save, Send, AlertCircle, X, ArrowLeft, Eye } from "lucide-react";
+import {
+  ImagePlus,
+  Save,
+  Send,
+  AlertCircle,
+  X,
+  ArrowLeft,
+  Eye,
+} from "lucide-react";
 
 export default function PostForm({ post }) {
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
-  const [imagePreview, setImagePreview] = useState(post?.["Unique-image"] ? appwriteService.getFilePreview(post["Unique-image"]) : null);
+  const [imagePreview, setImagePreview] = useState(
+    post?.["Unique-image"]
+      ? appwriteService.getFilePreview(post["Unique-image"])
+      : null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -39,13 +51,18 @@ export default function PostForm({ post }) {
 
   const slugTransform = useCallback((value) => {
     return value
-      ? value.trim().toLowerCase().replace(/[^a-zA-Z\d\s]+/g, "-").replace(/\s+/g, "-")
+      ? value
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-zA-Z\d\s]+/g, "-")
+          .replace(/\s+/g, "-")
       : "";
   }, []);
 
   useEffect(() => {
     const titleSub = watch(({ Title }, { name }) => {
-      if (name === "Title") setValue("slug", slugTransform(Title), { shouldValidate: true });
+      if (name === "Title")
+        setValue("slug", slugTransform(Title), { shouldValidate: true });
     });
     return () => titleSub.unsubscribe();
   }, [watch, slugTransform, setValue]);
@@ -65,7 +82,8 @@ export default function PostForm({ post }) {
   const submit = async (data) => {
     setIsSubmitting(true);
     try {
-      if (!userData?.$id) throw new Error("You must be logged in to create posts");
+      if (!userData?.$id)
+        throw new Error("You must be logged in to create posts");
 
       let file = null;
       if (data.image[0]) {
@@ -102,7 +120,7 @@ export default function PostForm({ post }) {
           UserName: userData.name,
           UserEmail: userData.email,
         });
-        
+
         if (newPost) {
           navigate(`/post/${newPost.$id}`);
           toast.success("Post created successfully");
@@ -119,7 +137,11 @@ export default function PostForm({ post }) {
 
   const goBack = () => {
     if (isDirty) {
-      if (window.confirm("You have unsaved changes. Are you sure you want to leave?")) {
+      if (
+        window.confirm(
+          "You have unsaved changes. Are you sure you want to leave?"
+        )
+      ) {
         navigate(-1);
       }
     } else {
@@ -128,13 +150,13 @@ export default function PostForm({ post }) {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }} 
-      animate={{ opacity: 1, y: 0 }} 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-7xl mx-auto"
     >
       <div className="mb-6 flex items-center justify-between">
-        <button 
+        <button
           onClick={goBack}
           className="flex items-center text-gray-400 hover:text-white transition"
         >
@@ -152,10 +174,14 @@ export default function PostForm({ post }) {
         <div className="p-6 border-b border-gray-800">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                watchStatus === "active" ? "bg-green-500" : "bg-yellow-500"
-              }`}></div>
-              <span className="text-gray-400 text-sm capitalize">{watchStatus} Post</span>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  watchStatus === "active" ? "bg-green-500" : "bg-yellow-500"
+                }`}
+              ></div>
+              <span className="text-gray-400 text-sm capitalize">
+                {watchStatus} Post
+              </span>
             </div>
             <button
               type="button"
@@ -171,15 +197,23 @@ export default function PostForm({ post }) {
         {previewMode ? (
           <div className="p-8">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-white mb-4">{watchTitle || "Untitled Post"}</h1>
+              <h1 className="text-3xl font-bold text-white mb-4">
+                {watchTitle || "Untitled Post"}
+              </h1>
               {imagePreview && (
                 <div className="w-full h-64 md:h-96 rounded-lg overflow-hidden mb-6">
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               )}
-              <div 
+              <div
                 className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: watchContent || "<p>No content yet...</p>" }}
+                dangerouslySetInnerHTML={{
+                  __html: watchContent || "<p>No content yet...</p>",
+                }}
               />
             </div>
             <Button
@@ -196,7 +230,9 @@ export default function PostForm({ post }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-300">Title</label>
+                  <label className="block text-sm font-medium text-gray-300">
+                    Title
+                  </label>
                   <input
                     className={`w-full px-4 py-3 bg-gray-800 border ${
                       errors.Title ? "border-red-500" : "border-gray-700"
@@ -213,11 +249,10 @@ export default function PostForm({ post }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-300">Slug</label>
+                  <label className="block text-sm font-medium text-gray-300">
+                    Slug
+                  </label>
                   <div className="flex">
-                    <div className="bg-gray-700 text-gray-400 px-3 py-3 rounded-l-lg flex items-center text-sm">
-                      yourdomain.com/post/
-                    </div>
                     <input
                       className={`flex-1 px-4 py-3 bg-gray-800 border ${
                         errors.slug ? "border-red-500" : "border-gray-700"
@@ -225,7 +260,9 @@ export default function PostForm({ post }) {
                       placeholder="your-post-title"
                       {...register("slug", { required: "Slug is required" })}
                       onInput={(e) =>
-                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true })
+                        setValue("slug", slugTransform(e.currentTarget.value), {
+                          shouldValidate: true,
+                        })
                       }
                     />
                   </div>
@@ -238,7 +275,9 @@ export default function PostForm({ post }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-300">Content</label>
+                  <label className="block text-sm font-medium text-gray-300">
+                    Content
+                  </label>
                   <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
                     <RTE
                       name="Content"
@@ -284,9 +323,13 @@ export default function PostForm({ post }) {
                       </div>
                     ) : (
                       <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
-                        <ImagePlus size={32} className="mx-auto text-gray-500 mb-2" />
+                        <ImagePlus
+                          size={32}
+                          className="mx-auto text-gray-500 mb-2"
+                        />
                         <p className="text-sm text-gray-400 mb-4">
-                          Drop your image here, or <span className="text-blue-400">browse</span>
+                          Drop your image here, or{" "}
+                          <span className="text-blue-400">browse</span>
                         </p>
                         <input
                           type="file"
@@ -294,8 +337,9 @@ export default function PostForm({ post }) {
                           className="hidden"
                           id="image-upload"
                           {...register("image", {
-                            required: !post && "Image is required for new posts",
-                            onChange: handleImageChange
+                            required:
+                              !post && "Image is required for new posts",
+                            onChange: handleImageChange,
                           })}
                         />
                         <label
@@ -322,7 +366,9 @@ export default function PostForm({ post }) {
                   </div>
                   <div className="p-4">
                     <div className="space-y-1">
-                      <label className="block text-sm font-medium text-gray-300">Status</label>
+                      <label className="block text-sm font-medium text-gray-300">
+                        Status
+                      </label>
                       <Select
                         options={[
                           { value: "draft", label: "Save as Draft" },
@@ -332,7 +378,9 @@ export default function PostForm({ post }) {
                         className={`w-full ${
                           errors.Status ? "border-red-500" : "border-gray-700"
                         }`}
-                        {...register("Status", { required: "Status is required" })}
+                        {...register("Status", {
+                          required: "Status is required",
+                        })}
                         darkMode
                       />
                       {errors.Status && (
@@ -345,31 +393,39 @@ export default function PostForm({ post }) {
                   </div>
                 </div>
 
-                {/* Categories - This could be added in a future implementation */}
-                <div className="bg-gray-800/50 rounded-lg border border-gray-700/50 overflow-hidden">
-                  <div className="p-4 border-b border-gray-700/50">
-                    <h3 className="font-medium text-gray-400">Categories</h3>
-                  </div>
-                  <div className="p-4">
-                    <p className="text-sm text-gray-500">
-                      Category selection coming soon
-                    </p>
-                  </div>
-                </div>
-
                 {/* Submit Buttons */}
                 <div className="flex flex-col space-y-3">
                   <Button
                     type="submit"
                     className="w-full justify-center py-3"
-                    bgColor={post ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"}
+                    bgColor={
+                      post
+                        ? "bg-blue-600 hover:bg-blue-700"
+                        : "bg-green-600 hover:bg-green-700"
+                    }
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         {post ? "Updating..." : "Publishing..."}
                       </>

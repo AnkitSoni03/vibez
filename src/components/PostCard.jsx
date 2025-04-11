@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import appwriteService from "../appwrite/config";
-import { MessageCircle, ThumbsUp, Clock, User, ChevronRight } from "lucide-react";
+import {
+  MessageCircle,
+  ThumbsUp,
+  Clock,
+  User,
+  ChevronRight,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
-function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $createdAt }) {
+function PostCard({
+  $id,
+  Title,
+  Content,
+  "Unique-image": imageId,
+  UserName,
+  $createdAt,
+}) {
   const imageUrl = imageId ? appwriteService.getFilePreview(imageId) : "";
-  const timeAgo = formatDistanceToNow(new Date($createdAt), { addSuffix: true });
+  const timeAgo = formatDistanceToNow(new Date($createdAt), {
+    addSuffix: true,
+  });
   const [likes, setLikes] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
@@ -40,11 +55,13 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
 
   // Function to extract text content from HTML
   const stripHtml = (html) => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
 
-  const contentPreview = Content ? stripHtml(Content).substring(0, 120) + "..." : "";
+  const contentPreview = Content
+    ? stripHtml(Content).substring(0, 120) + "..."
+    : "";
 
   return (
     <Link
@@ -52,12 +69,18 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
       className="group block rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 hover:shadow-xl shadow-md transition-all duration-300 h-full transform hover:-translate-y-1"
     >
       <div className="relative overflow-hidden">
-        <div className={`w-full h-52 sm:h-48 md:h-60 bg-gray-900 overflow-hidden ${!isLoaded ? 'animate-pulse' : ''}`}>
+        <div
+          className={`w-full h-52 sm:h-48 md:h-60 bg-gray-900 overflow-hidden ${
+            !isLoaded ? "animate-pulse" : ""
+          }`}
+        >
           {imageUrl ? (
-            <img 
-              src={imageUrl} 
-              alt={Title} 
-              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            <img
+              src={imageUrl}
+              alt={Title}
+              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              }`}
               onLoad={handleImageLoad}
             />
           ) : (
@@ -71,7 +94,7 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
             </div>
           )}
         </div>
-        
+
         {/* Category badge - this could be dynamic in the future */}
         <div className="absolute top-3 left-3">
           <span className="px-2 py-1 bg-blue-600/80 text-white text-xs font-medium rounded-full backdrop-blur-sm">
@@ -91,7 +114,9 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
         <div className="pt-2 flex items-center text-xs text-gray-500 space-x-4">
           <div className="flex items-center">
             <User size={14} className="mr-1" />
-            <span className="truncate max-w-[100px]">{UserName || "Unknown"}</span>
+            <span className="truncate max-w-[100px]">
+              {UserName || "Unknown"}
+            </span>
           </div>
           <div className="flex items-center">
             <Clock size={14} className="mr-1" />
@@ -102,7 +127,10 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
         <div className="flex items-center justify-between pt-3 border-t border-gray-700/50 mt-3">
           <div className="flex gap-3">
             <div className="flex items-center gap-1 text-gray-400 text-sm">
-              <ThumbsUp size={16} className={`${likes.length > 0 ? 'text-blue-400' : ''}`} />
+              <ThumbsUp
+                size={16}
+                className={`${likes.length > 0 ? "text-blue-400" : ""}`}
+              />
               <span>{likes.length}</span>
             </div>
             <div className="flex items-center gap-1 text-gray-400 text-sm">
@@ -111,7 +139,11 @@ function PostCard({ $id, Title, Content, "Unique-image": imageId, UserName, $cre
             </div>
           </div>
           <div className="text-blue-400 text-sm font-medium flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            Read More <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+            Read More{" "}
+            <ChevronRight
+              size={16}
+              className="ml-1 group-hover:translate-x-1 transition-transform"
+            />
           </div>
         </div>
       </div>

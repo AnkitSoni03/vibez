@@ -3,9 +3,16 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import appwriteService from "../appwrite/config";
 import PostForm from "../components/post-form/PostForm";
 import Loader from "../components/Loader";
-import { ArrowLeft, AlertCircle, Save, Trash, Image, FileEdit } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
+import {
+  ArrowLeft,
+  AlertCircle,
+  Save,
+  Trash,
+  Image,
+  FileEdit,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 function EditPost() {
   const { id } = useParams(); // post.$id
@@ -24,7 +31,9 @@ function EditPost() {
           if (res) {
             setPost(res);
             if (res["Unique-image"]) {
-              setPreviewImage(appwriteService.getFilePreview(res["Unique-image"]));
+              setPreviewImage(
+                appwriteService.getFilePreview(res["Unique-image"])
+              );
             }
           }
         } catch (error) {
@@ -42,26 +51,26 @@ function EditPost() {
     try {
       setSubmitting(true);
       let fileId = post["Unique-image"];
-      
+
       // Handle image update if needed
       if (updatedPost.image[0]) {
         const file = await appwriteService.uploadFile(updatedPost.image[0]);
-        
+
         if (file && post["Unique-image"]) {
           // Delete old image
           await appwriteService.deleteFile(post["Unique-image"]);
         }
-        
+
         fileId = file?.$id;
       }
-      
+
       const dbPost = await appwriteService.updatePost(id, {
         Title: updatedPost.title,
         Content: updatedPost.content,
         Status: "active",
         "Unique-image": fileId,
       });
-      
+
       if (dbPost) {
         toast.success("Post updated successfully");
         navigate(`/post/${dbPost.$id}`);
@@ -79,9 +88,11 @@ function EditPost() {
       setSubmitting(true);
       await Promise.all([
         appwriteService.deletePost(id),
-        post["Unique-image"] ? appwriteService.deleteFile(post["Unique-image"]) : Promise.resolve()
+        post["Unique-image"]
+          ? appwriteService.deleteFile(post["Unique-image"])
+          : Promise.resolve(),
       ]);
-      
+
       toast.success("Post deleted successfully");
       navigate("/");
     } catch (error) {
@@ -106,15 +117,17 @@ function EditPost() {
   if (!post) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center px-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-gray-800/80 backdrop-blur-sm rounded-xl p-8 max-w-md text-center border border-gray-700/50 shadow-xl"
         >
           <AlertCircle size={48} className="mx-auto mb-4 text-red-500" />
           <h2 className="text-2xl font-bold text-white mb-2">Post Not Found</h2>
-          <p className="text-gray-300 mb-6">The post you're trying to edit doesn't exist or has been removed.</p>
-          <Link 
+          <p className="text-gray-300 mb-6">
+            The post you're trying to edit doesn't exist or has been removed.
+          </p>
+          <Link
             to="/"
             className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
@@ -127,25 +140,27 @@ function EditPost() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen bg-gradient-to-b from-gray-900 to-black px-4 py-8 md:py-12"
     >
       {/* Top Navigation */}
       <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={18} />
           <span className="hidden md:inline">Back</span>
         </button>
-        
-        <h2 className="text-2xl md:text-3xl font-bold text-white text-center flex-1 md:flex-none">Edit Post</h2>
-        
+
+        <h2 className="text-2xl md:text-3xl font-bold text-white text-center flex-1 md:flex-none">
+          Edit Post
+        </h2>
+
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={() => setDeleteConfirm(true)}
             disabled={submitting}
             className="flex items-center gap-1 px-3 py-1.5 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors"
@@ -155,18 +170,19 @@ function EditPost() {
           </button>
         </div>
       </div>
-      
+
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-gray-800 rounded-xl p-6 max-w-md w-full border border-gray-700 shadow-xl"
           >
             <h3 className="text-xl font-bold text-white mb-2">Delete Post</h3>
             <p className="text-gray-300 mb-6">
-              Are you sure you want to delete this post? This action cannot be undone.
+              Are you sure you want to delete this post? This action cannot be
+              undone.
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -180,35 +196,37 @@ function EditPost() {
                 disabled={submitting}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
               >
-                {submitting ? 'Deleting...' : 'Delete'}
+                {submitting ? "Deleting..." : "Delete"}
                 {submitting && <Loader size="sm" />}
               </button>
             </div>
           </motion.div>
         </div>
       )}
-      
+
       <div className="max-w-4xl mx-auto">
         {/* Preview Card */}
         {previewImage && (
           <div className="mb-6 bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/50">
             <div className="relative aspect-video overflow-hidden">
-              <img 
-                src={previewImage} 
+              <img
+                src={previewImage}
                 alt={post.Title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
                 <div className="p-4 md:p-6">
-                  <h3 className="text-xl md:text-2xl font-bold text-white">{post.Title}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold text-white">
+                    {post.Title}
+                  </h3>
                 </div>
               </div>
             </div>
           </div>
         )}
-        
+
         {/* Edit Form */}
-        <motion.div 
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
@@ -216,9 +234,11 @@ function EditPost() {
         >
           <div className="flex items-center gap-2 mb-6">
             <FileEdit size={20} className="text-indigo-400" />
-            <h3 className="text-lg font-medium text-white">Edit Post Details</h3>
+            <h3 className="text-lg font-medium text-white">
+              Edit Post Details
+            </h3>
           </div>
-          
+
           <PostForm
             post={{
               title: post.Title,
@@ -229,9 +249,9 @@ function EditPost() {
             isSubmitting={submitting}
           />
         </motion.div>
-        
+
         {/* Tips */}
-        <motion.div 
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -242,14 +262,15 @@ function EditPost() {
             <span>Pro Tip</span>
           </h4>
           <p className="text-gray-300 text-sm">
-            High-quality images can significantly increase engagement with your posts. For best results, use images with a 16:9 aspect ratio.
+            High-quality images can significantly increase engagement with your
+            posts. For best results, use images with a 16:9 aspect ratio.
           </p>
         </motion.div>
       </div>
-      
+
       {/* Fixed Save Button for Mobile */}
       <div className="fixed bottom-6 right-6 md:hidden">
-        <button 
+        <button
           form="post-form" // Assuming your form has this id
           type="submit"
           disabled={submitting}

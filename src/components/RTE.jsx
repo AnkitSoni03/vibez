@@ -1,12 +1,22 @@
-import React from 'react';
-import { Editor } from '@tinymce/tinymce-react';
-import { Controller } from 'react-hook-form';
+import React from "react";
+import { Editor } from "@tinymce/tinymce-react";
+import { Controller } from "react-hook-form";
 
-export default function RTE({ name, control, label, defaultValue = "", darkMode = true }) {
+export default function RTE({
+  name,
+  control,
+  label,
+  defaultValue = "",
+  darkMode = true,
+}) {
   return (
-    <div className='w-full mb-6'>
+    <div className="w-full mb-6">
       {label && (
-        <label className={`block mb-2 text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+        <label
+          className={`block mb-2 text-sm font-medium ${
+            darkMode ? "text-gray-300" : "text-gray-700"
+          }`}
+        >
           {label}
         </label>
       )}
@@ -14,25 +24,40 @@ export default function RTE({ name, control, label, defaultValue = "", darkMode 
         name={name || "content"}
         control={control}
         render={({ field: { onChange } }) => (
-          <div className={darkMode ? 'dark-editor' : ''}>
+          <div className={darkMode ? "dark-editor" : ""}>
             <Editor
-               apiKey='ekv6yc9az2tgv36yhnulgnbodlsqpk2hgim29dbhgjgcnk5z'
+              apiKey="ekv6yc9az2tgv36yhnulgnbodlsqpk2hgim29dbhgjgcnk5z"
               initialValue={defaultValue}
               init={{
                 height: 500,
                 menubar: true,
-                skin: darkMode ? 'oxide-dark' : 'oxide',
-                content_css: darkMode ? 'dark' : 'default',
+                skin: darkMode ? "oxide-dark" : "oxide",
+                content_css: darkMode ? "dark" : "default",
                 plugins: [
-                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                  'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                  "advlist",
+                  "autolink",
+                  "lists",
+                  "link",
+                  "image",
+                  "charmap",
+                  "preview",
+                  "anchor",
+                  "searchreplace",
+                  "visualblocks",
+                  "code",
+                  "fullscreen",
+                  "insertdatetime",
+                  "media",
+                  "table",
+                  "code",
+                  "help",
+                  "wordcount",
                 ],
                 toolbar:
-                  'undo redo | blocks | ' +
-                  'bold italic forecolor | alignleft aligncenter ' +
-                  'alignright alignjustify | bullist numlist outdent indent | ' +
-                  'removeformat | help | image',
+                  "undo redo | blocks | " +
+                  "bold italic forecolor | alignleft aligncenter " +
+                  "alignright alignjustify | bullist numlist outdent indent | " +
+                  "removeformat | help | image",
                 images_upload_handler: async (blobInfo) => {
                   // Implement your image upload logic here
                 },
@@ -40,9 +65,13 @@ export default function RTE({ name, control, label, defaultValue = "", darkMode 
                   body { 
                     font-family:Helvetica,Arial,sans-serif; 
                     font-size:14px; 
-                    ${darkMode ? 'background-color: #1f2937; color: #f3f4f6;' : ''}
+                    ${
+                      darkMode
+                        ? "background-color: #1f2937; color: #f3f4f6;"
+                        : ""
+                    }
                   }
-                `
+                `,
               }}
               onEditorChange={onChange}
             />

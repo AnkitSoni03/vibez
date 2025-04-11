@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Logo, LogoutBtn } from '../index';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { Bell, Menu, X } from 'lucide-react';
-import appwriteService from '../../appwrite/config';
-import { formatDistanceToNow } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import { Container, Logo, LogoutBtn } from "../index";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import { Bell, Menu, X } from "lucide-react";
+import appwriteService from "../../appwrite/config";
+import { formatDistanceToNow } from "date-fns";
+import conf from "../../conf/conf";
+import { toast } from "react-hot-toast";
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status);
@@ -13,22 +15,84 @@ function Header() {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Real-time notifications setup
   useEffect(() => {
-    if (authStatus && userData?.$id) {
-      const fetchNotifications = async () => {
-        const response = await appwriteService.getUserNotifications(userData.$id);
+    let unsubscribe;
+
+    const fetchAndSubscribe = async () => {
+      if (!authStatus || !userData?.$id) return;
+
+      try {
+        setNotificationsLoading(true);
+
+        // Initial fetch
+        const response = await appwriteService.getUserNotifications(
+          userData.$id
+        );
         setNotifications(response.documents || []);
-      };
-      fetchNotifications();
-    }
+
+        // Real-time subscription
+        const channel = `collections.${conf.appwriteNotificationsCollectionId}.documents`;
+        unsubscribe = appwriteService.client.subscribe(channel, (response) => {
+          // Handle new notifications
+          if (
+            response.events.includes(
+              "databases.*.collections.*.documents.*.create"
+            )
+          ) {
+            const newNotif = response.payload;
+            if (newNotif.userId === userData.$id) {
+              setNotifications((prev) => [newNotif, ...prev]);
+            }
+          }
+
+          // Handle read status updates
+          if (
+            response.events.includes(
+              "databases.*.collections.*.documents.*.update"
+            )
+          ) {
+            const updatedNotif = response.payload;
+            setNotifications((prev) =>
+              prev.map((n) => (n.$id === updatedNotif.$id ? updatedNotif : n))
+            );
+          }
+        });
+      } catch (error) {
+        console.error("Notification error:", error);
+        toast.error("Failed to load notifications");
+      } finally {
+        setNotificationsLoading(false);
+      }
+    };
+
+    fetchAndSubscribe();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [authStatus, userData]);
 
   const handleNotificationClick = async (notification) => {
-    await appwriteService.markNotificationAsRead(notification.$id);
-    navigate(`/post/${notification.postId}`);
-    setShowNotifications(false);
+    try {
+      if (!notification.read) {
+        await appwriteService.markNotificationAsRead(notification.$id);
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.$id === notification.$id ? { ...n, read: true } : n
+          )
+        );
+      }
+      navigate(`/post/${notification.postId}`);
+    } catch (error) {
+      console.error("Notification click error:", error);
+      toast.error("Failed to update notification");
+    } finally {
+      setShowNotifications(false);
+    }
   };
 
   const navigateAndCloseMenu = (slug) => {
@@ -38,46 +102,52 @@ function Header() {
 
   const navItems = [
     {
-      name: 'Home',
-      slug: '/',
+      name: "Home",
+      slug: "/",
       active: true,
     },
     {
-      name: 'Login',
-      slug: '/login',
+      name: "Login",
+      slug: "/login",
       active: !authStatus,
     },
     {
-      name: 'Signup',
-      slug: '/signup',
+      name: "Signup",
+      slug: "/signup",
       active: !authStatus,
     },
     {
-      name: 'All Posts',
-      slug: '/all-posts',
+      name: "All Posts",
+      slug: "/all-posts",
       active: authStatus,
     },
     {
-      name: 'Add Post',
-      slug: '/add-post',
+      name: "Add Post",
+      slug: "/add-post",
       active: authStatus,
     },
   ];
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+      transition={{ type: "spring", stiffness: 300, damping: 24 }}
       className="sticky top-0 z-50 bg-gray-900 border-b border-gray-800 shadow-lg"
     >
       <Container>
         <nav className="flex items-center justify-between h-16">
           {/* Left: Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="./vibez-logo.png" alt="logo" className="w-10 h-10 object-contain rounded-md shadow-md"/>
+            <img
+              src="./vibez-logo.png"
+              alt="logo"
+              className="w-10 h-10 object-contain rounded-md shadow-md"
+            />
             <Logo width="40px" darkMode />
-            <span className="text-xl font-bold text-white hidden sm:inline">VIBEZ</span>
+            <span className="text-xl font-bold text-white hidden sm:inline">
+              VIBEZ
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -92,8 +162,8 @@ function Header() {
                   onClick={() => navigate(item.slug)}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     window.location.pathname === item.slug
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? "bg-indigo-600 text-white"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`}
                 >
                   {item.name}
@@ -104,14 +174,14 @@ function Header() {
             {/* Notification Icon with dropdown */}
             {authStatus && (
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="relative text-gray-300 hover:text-white p-1"
                 >
                   <Bell className="w-5 h-5" />
-                  {notifications.filter(n => !n.read).length > 0 && (
+                  {notifications.filter((n) => !n.read).length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                      {notifications.filter(n => !n.read).length}
+                      {notifications.filter((n) => !n.read).length}
                     </span>
                   )}
                 </button>
@@ -120,29 +190,57 @@ function Header() {
                   <div className="absolute right-0 mt-2 w-72 bg-gray-800 rounded-lg shadow-xl border border-gray-700 max-h-96 overflow-y-auto">
                     <div className="p-3 border-b border-gray-700 flex justify-between items-center">
                       <h3 className="font-bold text-white">Notifications</h3>
-                      <button 
-                        onClick={() => setShowNotifications(false)}
-                        className="text-gray-400 hover:text-white"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    
-                    {notifications.length === 0 ? (
-                      <p className="p-4 text-gray-400 text-center">No notifications yet</p>
-                    ) : (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification.$id} 
-                          className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${!notification.read ? 'bg-gray-700' : ''}`}
-                          onClick={() => handleNotificationClick(notification)}
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-green-400">• Live</span>
+                        <button
+                          onClick={() => setShowNotifications(false)}
+                          className="text-gray-400 hover:text-white"
                         >
-                          <p className="text-sm text-white">{notification.message}</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {formatDistanceToNow(new Date(notification.$createdAt), { addSuffix: true })}
-                          </p>
-                        </div>
-                      ))
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+
+                    {notificationsLoading ? (
+                      <div className="p-4 flex justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <p className="p-4 text-gray-400 text-center">
+                        No notifications yet
+                      </p>
+                    ) : (
+                      notifications
+                        .sort(
+                          (a, b) =>
+                            new Date(b.$createdAt) - new Date(a.$createdAt)
+                        )
+                        .map((notification) => (
+                          <div
+                            key={notification.$id}
+                            className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${
+                              !notification.read ? "bg-gray-700" : ""
+                            }`}
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
+                          >
+                            <p className="text-sm text-white">
+                              {notification.message}
+                            </p>
+                            <div className="flex justify-between items-center mt-1">
+                              <p className="text-xs text-gray-400">
+                                {formatDistanceToNow(
+                                  new Date(notification.$createdAt),
+                                  { addSuffix: true }
+                                )}
+                              </p>
+                              {!notification.read && (
+                                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                              )}
+                            </div>
+                          </div>
+                        ))
                     )}
                   </div>
                 )}
@@ -152,7 +250,7 @@ function Header() {
             {/* User Info */}
             {authStatus && (
               <div className="text-xs text-gray-400 text-left">
-                <p className="font-semibold">{userData?.name || 'No Name'}</p>
+                <p className="font-semibold">{userData?.name || "No Name"}</p>
                 <p>{userData?.email}</p>
               </div>
             )}
@@ -165,14 +263,14 @@ function Header() {
           <div className="md:hidden flex items-center">
             {authStatus && (
               <div className="relative mr-2">
-                <button 
+                <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="relative text-gray-300 hover:text-white p-1"
                 >
                   <Bell className="w-5 h-5" />
-                  {notifications.filter(n => !n.read).length > 0 && (
+                  {notifications.filter((n) => !n.read).length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                      {notifications.filter(n => !n.read).length}
+                      {notifications.filter((n) => !n.read).length}
                     </span>
                   )}
                 </button>
@@ -181,26 +279,39 @@ function Header() {
                   <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-lg shadow-xl border border-gray-700 max-h-96 overflow-y-auto">
                     <div className="p-3 border-b border-gray-700 flex justify-between items-center">
                       <h3 className="font-bold text-white">Notifications</h3>
-                      <button 
+                      <button
                         onClick={() => setShowNotifications(false)}
                         className="text-gray-400 hover:text-white"
                       >
                         ✕
                       </button>
                     </div>
-                    
-                    {notifications.length === 0 ? (
-                      <p className="p-4 text-gray-400 text-center">No notifications yet</p>
+
+                    {notificationsLoading ? (
+                      <div className="p-4 flex justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                      </div>
+                    ) : notifications.length === 0 ? (
+                      <p className="p-4 text-gray-400 text-center">
+                        No notifications yet
+                      </p>
                     ) : (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification.$id} 
-                          className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${!notification.read ? 'bg-gray-700' : ''}`}
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.$id}
+                          className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${
+                            !notification.read ? "bg-gray-700" : ""
+                          }`}
                           onClick={() => handleNotificationClick(notification)}
                         >
-                          <p className="text-sm text-white">{notification.message}</p>
+                          <p className="text-sm text-white">
+                            {notification.message}
+                          </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            {formatDistanceToNow(new Date(notification.$createdAt), { addSuffix: true })}
+                            {formatDistanceToNow(
+                              new Date(notification.$createdAt),
+                              { addSuffix: true }
+                            )}
                           </p>
                         </div>
                       ))
@@ -209,12 +320,16 @@ function Header() {
                 )}
               </div>
             )}
-            
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-300 hover:text-white p-2 rounded-md"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </nav>
@@ -236,8 +351,8 @@ function Header() {
                   onClick={() => navigateAndCloseMenu(item.slug)}
                   className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
                     window.location.pathname === item.slug
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? "bg-indigo-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
                   }`}
                 >
                   {item.name}
@@ -251,12 +366,12 @@ function Header() {
                 <div className="flex items-center space-x-3">
                   <div className="flex-shrink-0">
                     <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
-                      {userData?.name ? userData.name[0].toUpperCase() : '?'}
+                      {userData?.name ? userData.name[0].toUpperCase() : "?"}
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">
-                      {userData?.name || 'No Name'}
+                      {userData?.name || "No Name"}
                     </p>
                     <p className="text-xs text-gray-400 truncate">
                       {userData?.email}

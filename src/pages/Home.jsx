@@ -1,21 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import appwriteService from "../appwrite/config";
-import { Container, PostCard, Loader } from '../components';
-import { useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { PlusCircle, RefreshCw, Search, User, Settings, Bell, Home as HomeIcon } from 'lucide-react';
+import { Container, PostCard, Loader } from "../components";
+import { useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import {
+  PlusCircle,
+  RefreshCw,
+  Search,
+  User,
+  Settings,
+  Bell,
+  Home as HomeIcon,
+} from "lucide-react";
 
 function Home() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
-  const authStatus = useSelector(state => state.auth.status);
-  const userData = useSelector(state => state.auth.userData);
+
+  const authStatus = useSelector((state) => state.auth.status);
+  const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -31,7 +39,7 @@ function Home() {
         setLoading(false);
       }
     };
-    
+
     fetchPosts();
   }, [userData]);
 
@@ -50,17 +58,20 @@ function Home() {
     }
   };
 
-  const filteredPosts = posts.filter(post => 
-    post.Title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.Content.toLowerCase().includes(searchQuery.toLowerCase())
-  ).sort((a, b) => {
-    if (activeTab === 'latest') {
-      return new Date(b.$createdAt) - new Date(a.$createdAt);
-    } else if (activeTab === 'popular') {
-      return (b.likes || 0) - (a.likes || 0);
-    }
-    return 0;
-  });
+  const filteredPosts = posts
+    .filter(
+      (post) =>
+        post.Title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.Content.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (activeTab === "latest") {
+        return new Date(b.$createdAt) - new Date(a.$createdAt);
+      } else if (activeTab === "popular") {
+        return (b.likes || 0) - (a.likes || 0);
+      }
+      return 0;
+    });
 
   if (loading) {
     return (
@@ -73,8 +84,8 @@ function Home() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center px-4">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center p-8 bg-gray-800/80 backdrop-blur-sm rounded-xl max-w-md border border-gray-700/50 shadow-xl"
         >
@@ -101,7 +112,7 @@ function Home() {
       >
         <Container>
           <div className="text-center py-8 md:py-16">
-            <motion.h1 
+            <motion.h1
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -109,17 +120,19 @@ function Home() {
             >
               Welcome to VIBEZ
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
               className="text-lg md:text-xl text-gray-400 mb-8"
             >
-              {authStatus ? "Create your first post!" : "Login to explore and create posts!"}
+              {authStatus
+                ? "Create your first post!"
+                : "Login to explore and create posts!"}
             </motion.p>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -130,22 +143,33 @@ function Home() {
                   <User size={32} className="text-white" />
                 </div>
               </div>
-              
+
               <p className="text-gray-300 mb-8 max-w-md mx-auto">
-                Share your thoughts, ideas, and creativity with the community. Connect with like-minded people and explore a world of inspiration.
+                Share your thoughts, ideas, and creativity with the community.
+                Connect with like-minded people and explore a world of
+                inspiration.
               </p>
-              
+
               {!authStatus ? (
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <Link to="/login" className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-center">
+                  <Link
+                    to="/login"
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-center"
+                  >
                     Login
                   </Link>
-                  <Link to="/signup" className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-center">
+                  <Link
+                    to="/signup"
+                    className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-center"
+                  >
                     Sign Up
                   </Link>
                 </div>
               ) : (
-                <Link to="/add-post" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all">
+                <Link
+                  to="/add-post"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all"
+                >
                   <PlusCircle size={20} />
                   <span>Create Your First Post</span>
                 </Link>
@@ -153,11 +177,11 @@ function Home() {
             </motion.div>
           </div>
         </Container>
-        
+
         {/* Mobile Action Buttons */}
         {authStatus && (
           <div className="fixed bottom-6 right-6 md:hidden">
-            <Link 
+            <Link
               to="/add-post"
               className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50 transition-all"
             >
@@ -165,28 +189,43 @@ function Home() {
             </Link>
           </div>
         )}
-        
+
         {/* Mobile Navigation */}
         {authStatus && (
           <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
             <div className="flex justify-around items-center h-16">
-              <Link to="/" className="flex flex-col items-center text-indigo-500">
+              <Link
+                to="/"
+                className="flex flex-col items-center text-indigo-500"
+              >
                 <HomeIcon size={20} />
                 <span className="text-xs mt-1">Home</span>
               </Link>
-              <Link to="/search" className="flex flex-col items-center text-gray-400">
+              <Link
+                to="/search"
+                className="flex flex-col items-center text-gray-400"
+              >
                 <Search size={20} />
                 <span className="text-xs mt-1">Search</span>
               </Link>
-              <Link to="/add-post" className="flex flex-col items-center text-gray-400">
+              <Link
+                to="/add-post"
+                className="flex flex-col items-center text-gray-400"
+              >
                 <PlusCircle size={20} />
                 <span className="text-xs mt-1">Create</span>
               </Link>
-              <Link to="/notifications" className="flex flex-col items-center text-gray-400">
+              <Link
+                to="/notifications"
+                className="flex flex-col items-center text-gray-400"
+              >
                 <Bell size={20} />
                 <span className="text-xs mt-1">Alerts</span>
               </Link>
-              <Link to="/profile" className="flex flex-col items-center text-gray-400">
+              <Link
+                to="/profile"
+                className="flex flex-col items-center text-gray-400"
+              >
                 <User size={20} />
                 <span className="text-xs mt-1">Profile</span>
               </Link>
@@ -198,57 +237,57 @@ function Home() {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-4 pb-20 md:pb-12"
     >
       <Container>
         {/* Tab Navigation */}
         <div className="flex justify-around mb-6 border-b border-gray-800 sticky top-16 bg-gray-900/95 backdrop-blur-sm z-10 -mx-4 px-4">
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => setActiveTab("all")}
             className={`px-4 py-3 font-medium relative ${
-              activeTab === 'all' 
-                ? 'text-indigo-400' 
-                : 'text-gray-400 hover:text-gray-200'
+              activeTab === "all"
+                ? "text-indigo-400"
+                : "text-gray-400 hover:text-gray-200"
             }`}
           >
             All Posts
-            {activeTab === 'all' && (
-              <motion.div 
+            {activeTab === "all" && (
+              <motion.div
                 layoutId="activeTab"
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
               />
             )}
           </button>
           <button
-            onClick={() => setActiveTab('latest')}
+            onClick={() => setActiveTab("latest")}
             className={`px-4 py-3 font-medium relative ${
-              activeTab === 'latest' 
-                ? 'text-indigo-400' 
-                : 'text-gray-400 hover:text-gray-200'
+              activeTab === "latest"
+                ? "text-indigo-400"
+                : "text-gray-400 hover:text-gray-200"
             }`}
           >
             Latest
-            {activeTab === 'latest' && (
-              <motion.div 
+            {activeTab === "latest" && (
+              <motion.div
                 layoutId="activeTab"
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
               />
             )}
           </button>
           <button
-            onClick={() => setActiveTab('popular')}
+            onClick={() => setActiveTab("popular")}
             className={`px-4 py-3 font-medium relative ${
-              activeTab === 'popular' 
-                ? 'text-indigo-400' 
-                : 'text-gray-400 hover:text-gray-200'
+              activeTab === "popular"
+                ? "text-indigo-400"
+                : "text-gray-400 hover:text-gray-200"
             }`}
           >
             Popular
-            {activeTab === 'popular' && (
-              <motion.div 
+            {activeTab === "popular" && (
+              <motion.div
                 layoutId="activeTab"
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
               />
@@ -259,23 +298,27 @@ function Home() {
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8">
           {authStatus ? "Your Feed" : "Latest Posts"}
         </h1>
-        
+
         {filteredPosts.length === 0 ? (
           <div className="bg-gray-800/50 rounded-xl p-8 text-center border border-gray-700/50">
             <Search size={32} className="mx-auto mb-4 text-gray-500" />
-            <h2 className="text-xl font-semibold text-white mb-2">No matching posts found</h2>
-            <p className="text-gray-400">Try adjusting your search or explore different categories</p>
+            <h2 className="text-xl font-semibold text-white mb-2">
+              No matching posts found
+            </h2>
+            <p className="text-gray-400">
+              Try adjusting your search or explore different categories
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <AnimatePresence>
               {filteredPosts.map((post) => (
-                <motion.div 
-                  key={post.$id} 
+                <motion.div
+                  key={post.$id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
-                  whileHover={{ y: -5 }} 
+                  whileHover={{ y: -5 }}
                   transition={{ duration: 0.2 }}
                 >
                   <PostCard {...post} />
@@ -285,7 +328,7 @@ function Home() {
           </div>
         )}
       </Container>
-      
+
       {/* Mobile Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
         <div className="flex justify-around items-center h-16">
@@ -293,28 +336,40 @@ function Home() {
             <HomeIcon size={20} />
             <span className="text-xs mt-1">Home</span>
           </Link>
-          <Link to="/search" className="flex flex-col items-center text-gray-400">
+          <Link
+            to="/search"
+            className="flex flex-col items-center text-gray-400"
+          >
             <Search size={20} />
             <span className="text-xs mt-1">Search</span>
           </Link>
-          <Link to="/add-post" className="flex flex-col items-center text-gray-400">
+          <Link
+            to="/add-post"
+            className="flex flex-col items-center text-gray-400"
+          >
             <PlusCircle size={20} />
             <span className="text-xs mt-1">Create</span>
           </Link>
-          <Link to="/notifications" className="flex flex-col items-center text-gray-400">
+          <Link
+            to="/notifications"
+            className="flex flex-col items-center text-gray-400"
+          >
             <Bell size={20} />
             <span className="text-xs mt-1">Alerts</span>
           </Link>
-          <Link to="/profile" className="flex flex-col items-center text-gray-400">
+          <Link
+            to="/profile"
+            className="flex flex-col items-center text-gray-400"
+          >
             <User size={20} />
             <span className="text-xs mt-1">Profile</span>
           </Link>
         </div>
       </div>
-      
+
       {/* Create Post Floating Button (mobile only) */}
       <div className="fixed bottom-20 right-4 md:hidden">
-        <button 
+        <button
           onClick={handleRefresh}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-800 text-gray-200 shadow-lg hover:text-white transition-all"
         >
