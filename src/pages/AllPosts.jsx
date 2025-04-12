@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   Send,
   PlusCircle,
-  Camera,
   Share2,
   Bookmark,
   BookmarkCheck,
@@ -863,14 +862,14 @@ function AllPosts() {
      `}</style>
 
       <style>{`
-  @keyframes pulse-fast {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
-  }
-  .animate-pulse-fast {
-    animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+       @keyframes pulse-fast {
+       0% { opacity: 0.6; }
+       50% { opacity: 1; }
+       100% { opacity: 0.6; }
+      }
+       .animate-pulse-fast {
+        animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
 `}</style>
     </div>
   );

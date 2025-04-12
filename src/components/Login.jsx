@@ -27,7 +27,7 @@ function Login() {
         const userData = await authService.getCurrentUser();
         if (userData) {
           dispatch(authLogin(userData));
-          navigate(location.state?.from || "/", { replace: true });
+          navigate(location.state?.from || "/all-posts", { replace: true });
         }
       }
     } catch (error) {

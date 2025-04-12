@@ -198,7 +198,6 @@ function Header() {
                     <div className="p-3 border-b border-gray-700 flex justify-between items-center">
                       <h3 className="font-bold text-white">Notifications</h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-green-400">• Live</span>
                         <button
                           onClick={() => setShowNotifications(false)}
                           className="text-gray-400 hover:text-white"
