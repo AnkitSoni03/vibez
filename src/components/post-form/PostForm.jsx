@@ -86,11 +86,11 @@ export default function PostForm({ post }) {
         throw new Error("You must be logged in to create posts");
 
       let file = null;
-      if (data.image[0]) {
+      if (data.image && data.image[0]) {
         file = await appwriteService.uploadFile(data.image[0]);
       }
 
-      if (post) {
+      if (post?.$id) {
         // Update
         if (file && post["Unique-image"]) {
           await appwriteService.deleteFile(post["Unique-image"]);
@@ -155,18 +155,22 @@ export default function PostForm({ post }) {
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-7xl mx-auto"
     >
-      <div className="mb-6 flex items-center justify-between">
+      
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <button
           onClick={goBack}
-          className="flex items-center text-gray-400 hover:text-white transition"
+          className="flex items-center text-gray-400 hover:text-white transition duration-200 ease-in-out hover:scale-105"
         >
-          <ArrowLeft size={18} className="mr-1" />
-          <span>Back</span>
+          <ArrowLeft size={20} className="mr-2" />
+          <span className="text-sm sm:text-base">Back</span>
         </button>
-        <h1 className="text-2xl font-bold text-white">
-          {post ? "Edit Post" : "Create New Post"}
+
+        <h1 className="text-lg sm:text-xl font-bold text-white text-center sm:text-left">
+          {post?.$id ? "Edit Post" : "Create New Post"}
         </h1>
-        <div className="w-20"></div> {/* Spacer for flexbox alignment */}
+
+        {/* Spacer or future action buttons (edit/save etc.) */}
+        <div className="w-full sm:w-20 h-0"></div>
       </div>
 
       {/* Main Form */}
@@ -226,7 +230,7 @@ export default function PostForm({ post }) {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(submit)} className="p-6">
+          <form id="post-form" onSubmit={handleSubmit(submit)} className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
                 <div className="space-y-1">
@@ -256,7 +260,7 @@ export default function PostForm({ post }) {
                     <input
                       className={`flex-1 px-4 py-3 bg-gray-800 border ${
                         errors.slug ? "border-red-500" : "border-gray-700"
-                      } rounded-r-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white`}
+                      } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white`}
                       placeholder="your-post-title"
                       {...register("slug", { required: "Slug is required" })}
                       onInput={(e) =>
@@ -399,7 +403,7 @@ export default function PostForm({ post }) {
                     type="submit"
                     className="w-full justify-center py-3"
                     bgColor={
-                      post
+                      post?.$id
                         ? "bg-blue-600 hover:bg-blue-700"
                         : "bg-green-600 hover:bg-green-700"
                     }
@@ -427,22 +431,22 @@ export default function PostForm({ post }) {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        {post ? "Updating..." : "Publishing..."}
+                        {post?.$id ? "Updating..." : "Publishing..."}
                       </>
                     ) : (
-                      <>
-                        {post ? (
+                      <div className="flex items-center justify-center">
+                        {post?.$id ? (
                           <>
-                            <Save size={18} className="mr-1" />
-                            Update Post
+                            <Save size={18} className="mr-2" />
+                            <span>Update Post</span>
                           </>
                         ) : (
                           <>
-                            <Send size={18} className="mr-1" />
-                            Publish Post
+                            <Send size={18} className="mr-2" />
+                            <span>Publish Post</span>
                           </>
                         )}
-                      </>
+                      </div>
                     )}
                   </Button>
                   <button

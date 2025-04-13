@@ -20,51 +20,42 @@ export default function RTE({
           {label}
         </label>
       )}
+
       <Controller
         name={name || "content"}
         control={control}
-        render={({ field: { onChange } }) => (
-          <div className={darkMode ? "dark-editor" : ""}>
+        render={({ field: { onChange, value } }) => (
+          <div
+            className={`rte-container ${darkMode ? "dark-editor" : ""}`}
+            style={{ direction: "ltr" }}
+          >
             <Editor
               apiKey="ekv6yc9az2tgv36yhnulgnbodlsqpk2hgim29dbhgjgcnk5z"
-              initialValue={defaultValue}
+              value={value}
+              onEditorChange={onChange}
               init={{
                 height: 500,
                 menubar: true,
                 skin: darkMode ? "oxide-dark" : "oxide",
                 content_css: darkMode ? "dark" : "default",
+                directionality: "ltr",
                 plugins: [
-                  "advlist",
-                  "autolink",
-                  "lists",
-                  "link",
-                  "image",
-                  "charmap",
-                  "preview",
-                  "anchor",
-                  "searchreplace",
-                  "visualblocks",
-                  "code",
-                  "fullscreen",
-                  "insertdatetime",
-                  "media",
-                  "table",
-                  "code",
-                  "help",
-                  "wordcount",
+                  "advlist autolink lists link image charmap preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table code help wordcount",
                 ],
                 toolbar:
                   "undo redo | blocks | " +
                   "bold italic forecolor | alignleft aligncenter " +
                   "alignright alignjustify | bullist numlist outdent indent | " +
-                  "removeformat | help | image",
-                images_upload_handler: async (blobInfo) => {
-                  // Implement your image upload logic here
-                },
+                  "removeformat | help",
                 content_style: `
-                  body { 
-                    font-family:Helvetica,Arial,sans-serif; 
-                    font-size:14px; 
+                  body {
+                    font-family:Helvetica,Arial,sans-serif;
+                    font-size:14px;
+                    direction: ltr;
+                    text-align: left;
+                    unicode-bidi: normal;
                     ${
                       darkMode
                         ? "background-color: #1f2937; color: #f3f4f6;"
@@ -73,7 +64,6 @@ export default function RTE({
                   }
                 `,
               }}
-              onEditorChange={onChange}
             />
           </div>
         )}

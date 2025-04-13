@@ -338,7 +338,7 @@ function AllPosts() {
               <span className="hidden sm:inline">Back</span>
             </button>
 
-            <h1 className="text-xl font-bold text-white">Community Feed</h1>
+            <h1 className="text-xl font-bold text-gray-300">Community Feed</h1>
 
             {userData && (
               <Link

@@ -295,7 +295,7 @@ function Home() {
           </button>
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8">
+        <h1 className="text-xl md:text-xl font-bold text-gray-300 text-center mb-6 md:mb-8">
           {authStatus ? "Your Feed" : "Latest Posts"}
         </h1>
 
