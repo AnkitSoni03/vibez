@@ -224,30 +224,10 @@ function Footer() {
         </div>
 
         {/* Bottom section with copyright */}
-        <div className="pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-400">
+        <div className="pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4 pb-4">
+          <p className="text-sm text-gray-400 text-center">
             &copy; {currentYear} VIBEZ. All rights reserved.
           </p>
-          <div className="flex space-x-6">
-            <Link
-              to="/#"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              to="/#"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              to="/#"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Cookie Policy
-            </Link>
-          </div>
         </div>
       </div>
     </motion.footer>

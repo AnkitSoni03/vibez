@@ -53,7 +53,7 @@ function Post() {
   return (
     <div className="max-w-4xl mx-auto w-full">
       {/* Breadcrumb */}
-      <div className="mb-4 sm:mb-6 text-xs sm:text-sm text-gray-400">
+      <div className="mb-4 sm:mb-6 text-xs sm:text-sm text-gray-400 px-4 pt-4">
         <Link to="/" className="hover:text-blue-400 transition">
           Home
         </Link>{" "}

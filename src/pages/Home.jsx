@@ -9,7 +9,6 @@ import {
   RefreshCw,
   Search,
   User,
-  Settings,
   Bell,
   Home as HomeIcon,
 } from "lucide-react";
@@ -108,7 +107,7 @@ function Home() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 md:py-12"
+        className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 md:py-12 p-4"
       >
         <Container>
           <div className="text-center py-8 md:py-16">

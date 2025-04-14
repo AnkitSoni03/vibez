@@ -232,7 +232,7 @@ export default function PostForm({ post }) {
         ) : (
           <form id="post-form" onSubmit={handleSubmit(submit)}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-6 px-2">
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-300">
                     Title

@@ -359,7 +359,7 @@ function AllPosts() {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search posts..."
+              placeholder="Search posts by title..."
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               className="w-full bg-gray-800/50 border border-gray-700 rounded-full py-2 pl-4 pr-10 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"

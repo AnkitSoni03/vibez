@@ -110,7 +110,7 @@ function EditPost() {
       className="min-h-screen bg-gradient-to-b from-gray-900 to-black py-6 sm:py-8 md:py-12 w-full px-1 sm:px-4"
     >
       {/* Top Navigation */}
-      <div className="max-w-4xl mx-auto mb-4 sm:mb-6 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto mb-4 sm:mb-6 flex items-center justify-between px-2">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-1 sm:gap-2 text-gray-400 hover:text-white transition-colors"
@@ -133,7 +133,7 @@ function EditPost() {
 
       {/* Mobile Breadcrumb - Mobile Only */}
       <div className="md:hidden max-w-4xl mx-auto mb-3">
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-gray-400 px-4">
           <Link to="/" className="hover:text-blue-400 transition">
             Home
           </Link>{" "}
