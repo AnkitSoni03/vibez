@@ -199,7 +199,7 @@ function Home() {
           </div>
           
           {/* Tab Navigation */}
-          <div className="flex justify-around border-b border-gray-800 bg-gray-900/95 backdrop-blur-sm">
+          <div className="flex justify-around border-b border-gray-800 bg-gray-900/95 backdrop-blur-sm pt-6">
             <button
               onClick={() => setActiveTab("all")}
               className={`px-4 py-3 font-medium relative ${
