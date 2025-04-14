@@ -87,7 +87,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">
       <Header />
-      <main className="flex-grow p-4 md:p-8">
+      <main className="flex-grow">
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>

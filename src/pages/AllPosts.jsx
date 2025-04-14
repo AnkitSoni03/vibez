@@ -411,7 +411,7 @@ function AllPosts() {
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-[45rem] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-[45rem] mx-auto px-1 sm:px-6 lg:px-8">
         <div className="py-4 space-y-6">
           {filteredPosts.length === 0 ? (
             <div className="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700">

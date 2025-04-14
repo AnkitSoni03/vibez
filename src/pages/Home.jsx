@@ -240,7 +240,7 @@ function Home() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-4 pb-20 md:pb-12"
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-4 pb-20 md:pb-12 p-1"
     >
       <Container>
         {/* Tab Navigation */}
@@ -330,7 +330,7 @@ function Home() {
       </Container>
 
       {/* Mobile Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
+      {/* <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
         <div className="flex justify-around items-center h-16">
           <Link to="/" className="flex flex-col items-center text-indigo-500">
             <HomeIcon size={20} />
@@ -365,7 +365,7 @@ function Home() {
             <span className="text-xs mt-1">Profile</span>
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* Create Post Floating Button (mobile only) */}
       <div className="fixed bottom-20 right-4 md:hidden">

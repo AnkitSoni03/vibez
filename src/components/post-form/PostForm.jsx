@@ -153,7 +153,7 @@ export default function PostForm({ post }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-7xl mx-auto"
+      className="w-full max-w-7xl mx-auto p-1"
     >
       
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -230,7 +230,7 @@ export default function PostForm({ post }) {
             </Button>
           </div>
         ) : (
-          <form id="post-form" onSubmit={handleSubmit(submit)} className="p-6">
+          <form id="post-form" onSubmit={handleSubmit(submit)}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
                 <div className="space-y-1">
