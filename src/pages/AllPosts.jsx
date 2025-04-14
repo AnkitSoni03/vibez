@@ -120,28 +120,76 @@ function AllPosts() {
   }, [userData, navigate]);
 
   // Check for content height after posts are loaded
+  // useEffect(() => {
+  //   const checkContentHeight = () => {
+  //     posts.forEach((post) => {
+  //       const contentElement = contentRefs.current[post.$id];
+  //       if (contentElement) {
+  //         const lineHeight = parseInt(
+  //           getComputedStyle(contentElement).lineHeight
+  //         );
+  //         const height = contentElement.clientHeight;
+  //         const lines = Math.round(height / lineHeight);
+
+  //         // If content has more than 2 lines and isn't already expanded
+  //         if (lines > 2 && !expandedContents[post.$id]) {
+  //           contentElement.classList.add("line-clamp-2");
+  //         }
+  //       }
+  //     });
+  //   };
+
+  //   if (!loading && posts.length > 0) {
+  //     // Use setTimeout to ensure DOM is fully rendered
+  //     setTimeout(checkContentHeight, 100);
+  //   }
+  // }, [posts, loading, expandedContents]);
+
   useEffect(() => {
     const checkContentHeight = () => {
-      posts.forEach((post) => {
-        const contentElement = contentRefs.current[post.$id];
-        if (contentElement) {
-          const lineHeight = parseInt(
-            getComputedStyle(contentElement).lineHeight
-          );
-          const height = contentElement.clientHeight;
-          const lines = Math.round(height / lineHeight);
+      const check = () => {
+        posts.forEach((post) => {
+          const contentElement = contentRefs.current[post.$id];
+          if (contentElement) {
+            // Get computed styles
+            const styles = getComputedStyle(contentElement);
 
-          // If content has more than 2 lines and isn't already expanded
-          if (lines > 2 && !expandedContents[post.$id]) {
-            contentElement.classList.add("line-clamp-2");
+            // Calculate line height (fallback to 1.5em if not set)
+            const lineHeight =
+              parseInt(styles.lineHeight) || parseInt(styles.fontSize) * 1.5;
+
+            // Calculate height and lines
+            const height = contentElement.scrollHeight;
+            const lines = Math.round(height / lineHeight);
+
+            // Only apply line clamp if needed and not already expanded
+            if (lines > 2 && !expandedContents[post.$id]) {
+              contentElement.classList.add("line-clamp-2");
+            } else {
+              contentElement.classList.remove("line-clamp-2");
+            }
           }
-        }
-      });
+        });
+      };
+
+      // First check immediately
+      check();
+
+      // Additional checks after short delays to catch late-rendering content
+      const timeout1 = setTimeout(check, 100);
+      const timeout2 = setTimeout(check, 500);
+      const timeout3 = setTimeout(check, 1000);
+
+      return () => {
+        clearTimeout(timeout1);
+        clearTimeout(timeout2);
+        clearTimeout(timeout3);
+      };
     };
 
     if (!loading && posts.length > 0) {
-      // Use setTimeout to ensure DOM is fully rendered
-      setTimeout(checkContentHeight, 100);
+      const cleanup = checkContentHeight();
+      return cleanup;
     }
   }, [posts, loading, expandedContents]);
 
@@ -312,16 +360,30 @@ function AllPosts() {
   if (loading) return <Loader />;
 
   // Function to check if content needs "Read more" button
+  // const contentNeedsExpansion = (postId) => {
+  //   const contentElement = contentRefs.current[postId];
+  //   if (!contentElement) return false;
+
+  //   const lineHeight =
+  //     parseInt(getComputedStyle(contentElement).lineHeight) || 24;
+  //   const height = contentElement.scrollHeight;
+  //   const lines = Math.round(height / lineHeight);
+
+  //   return lines > 2;
+  // };
+
   const contentNeedsExpansion = (postId) => {
     const contentElement = contentRefs.current[postId];
     if (!contentElement) return false;
 
-    const lineHeight =
-      parseInt(getComputedStyle(contentElement).lineHeight) || 24;
-    const height = contentElement.scrollHeight;
-    const lines = Math.round(height / lineHeight);
+    // Get the actual rendered height
+    const renderedHeight = contentElement.getBoundingClientRect().height;
 
-    return lines > 2;
+    // Get the height if all text was fully visible
+    const fullHeight = contentElement.scrollHeight;
+
+    // Add a small buffer (5px) to account for rounding differences
+    return fullHeight > renderedHeight + 5;
   };
 
   return (
@@ -588,7 +650,7 @@ function AllPosts() {
                       </div>
 
                       {/* Read More / See Less Button */}
-                      {contentRefs.current[post.$id] &&
+                      {/* {contentRefs.current[post.$id] &&
                         contentRefs.current[post.$id].scrollHeight >
                           parseInt(
                             getComputedStyle(contentRefs.current[post.$id])
@@ -609,7 +671,24 @@ function AllPosts() {
                               </>
                             )}
                           </button>
-                        )}
+                        )} */}
+
+                      {contentNeedsExpansion(post.$id) && (
+                        <button
+                          onClick={() => toggleContentExpansion(post.$id)}
+                          className="mt-1 flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium"
+                        >
+                          {expandedContents[post.$id] ? (
+                            <>
+                              See less <ChevronUp size={16} />
+                            </>
+                          ) : (
+                            <>
+                              Read more <ChevronDown size={16} />
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
 
                     {post["Unique-image"] && (
