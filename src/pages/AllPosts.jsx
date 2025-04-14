@@ -887,18 +887,6 @@ function AllPosts() {
         </div>
       </div>
 
-      {/* Create Post Floating Button (mobile only) */}
-      {userData && (
-        <div className="fixed bottom-6 right-6 md:hidden">
-          <Link
-            to="/add-post"
-            className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50 transition-all"
-          >
-            <PlusCircle size={24} />
-          </Link>
-        </div>
-      )}
-
       {/* Custom CSS for animations */}
       <style>{`
         @keyframes heartbeat {

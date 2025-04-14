@@ -176,197 +176,121 @@ function Home() {
             </motion.div>
           </div>
         </Container>
-
-        {/* Mobile Action Buttons */}
-        {authStatus && (
-          <div className="fixed bottom-6 right-6 md:hidden">
-            <Link
-              to="/add-post"
-              className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50 transition-all"
-            >
-              <PlusCircle size={24} />
-            </Link>
-          </div>
-        )}
-
-        {/* Mobile Navigation */}
-        {authStatus && (
-          <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
-            <div className="flex justify-around items-center h-16">
-              <Link
-                to="/"
-                className="flex flex-col items-center text-indigo-500"
-              >
-                <HomeIcon size={20} />
-                <span className="text-xs mt-1">Home</span>
-              </Link>
-              <Link
-                to="/search"
-                className="flex flex-col items-center text-gray-400"
-              >
-                <Search size={20} />
-                <span className="text-xs mt-1">Search</span>
-              </Link>
-              <Link
-                to="/add-post"
-                className="flex flex-col items-center text-gray-400"
-              >
-                <PlusCircle size={20} />
-                <span className="text-xs mt-1">Create</span>
-              </Link>
-              <Link
-                to="/notifications"
-                className="flex flex-col items-center text-gray-400"
-              >
-                <Bell size={20} />
-                <span className="text-xs mt-1">Alerts</span>
-              </Link>
-              <Link
-                to="/profile"
-                className="flex flex-col items-center text-gray-400"
-              >
-                <User size={20} />
-                <span className="text-xs mt-1">Profile</span>
-              </Link>
-            </div>
-          </div>
-        )}
       </motion.div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-4 pb-20 md:pb-12 p-1"
-    >
-      <Container>
-        {/* Tab Navigation */}
-        <div className="flex justify-around mb-6 border-b border-gray-800 sticky top-16 bg-gray-900/95 backdrop-blur-sm z-10 -mx-4 px-4">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`px-4 py-3 font-medium relative ${
-              activeTab === "all"
-                ? "text-indigo-400"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-          >
-            All Posts
-            {activeTab === "all" && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
-              />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("latest")}
-            className={`px-4 py-3 font-medium relative ${
-              activeTab === "latest"
-                ? "text-indigo-400"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-          >
-            Latest
-            {activeTab === "latest" && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
-              />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("popular")}
-            className={`px-4 py-3 font-medium relative ${
-              activeTab === "popular"
-                ? "text-indigo-400"
-                : "text-gray-400 hover:text-gray-200"
-            }`}
-          >
-            Popular
-            {activeTab === "popular" && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
-              />
-            )}
-          </button>
-        </div>
-
-        <h1 className="text-xl md:text-xl font-bold text-gray-300 text-center mb-6 md:mb-8">
-          {authStatus ? "Your Feed" : "Latest Posts"}
-        </h1>
-
-        {filteredPosts.length === 0 ? (
-          <div className="bg-gray-800/50 rounded-xl p-8 text-center border border-gray-700/50">
-            <Search size={32} className="mx-auto mb-4 text-gray-500" />
-            <h2 className="text-xl font-semibold text-white mb-2">
-              No matching posts found
-            </h2>
-            <p className="text-gray-400">
-              Try adjusting your search or explore different categories
-            </p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black relative pb-16 p-1">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-20 bg-gray-900 shadow-md border-b border-gray-800">
+        <div className="max-w-6xl mx-auto">
+          {/* App Header with Logo */}
+          <div className="flex justify-between items-center px-4 py-2">
+            <div className="text-indigo-400 font-bold text-xl">VIBEZ</div>
+            <div className="flex space-x-2">
+              <button className="p-2 text-gray-400 hover:text-white">
+                <Bell size={20} />
+              </button>
+              <button className="p-2 text-gray-400 hover:text-white">
+                <User size={20} />
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            <AnimatePresence>
-              {filteredPosts.map((post) => (
+          
+          {/* Tab Navigation */}
+          <div className="flex justify-around border-b border-gray-800 bg-gray-900/95 backdrop-blur-sm">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`px-4 py-3 font-medium relative ${
+                activeTab === "all"
+                  ? "text-indigo-400"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              All Posts
+              {activeTab === "all" && (
                 <motion.div
-                  key={post.$id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <PostCard {...post} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+                />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("latest")}
+              className={`px-4 py-3 font-medium relative ${
+                activeTab === "latest"
+                  ? "text-indigo-400"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              Latest
+              {activeTab === "latest" && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+                />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("popular")}
+              className={`px-4 py-3 font-medium relative ${
+                activeTab === "popular"
+                  ? "text-indigo-400"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              Popular
+              {activeTab === "popular" && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-400"
+                />
+              )}
+            </button>
           </div>
-        )}
-      </Container>
-
-      {/* Mobile Navigation */}
-      {/* <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 md:hidden z-10">
-        <div className="flex justify-around items-center h-16">
-          <Link to="/" className="flex flex-col items-center text-indigo-500">
-            <HomeIcon size={20} />
-            <span className="text-xs mt-1">Home</span>
-          </Link>
-          <Link
-            to="/search"
-            className="flex flex-col items-center text-gray-400"
-          >
-            <Search size={20} />
-            <span className="text-xs mt-1">Search</span>
-          </Link>
-          <Link
-            to="/add-post"
-            className="flex flex-col items-center text-gray-400"
-          >
-            <PlusCircle size={20} />
-            <span className="text-xs mt-1">Create</span>
-          </Link>
-          <Link
-            to="/notifications"
-            className="flex flex-col items-center text-gray-400"
-          >
-            <Bell size={20} />
-            <span className="text-xs mt-1">Alerts</span>
-          </Link>
-          <Link
-            to="/profile"
-            className="flex flex-col items-center text-gray-400"
-          >
-            <User size={20} />
-            <span className="text-xs mt-1">Profile</span>
-          </Link>
         </div>
-      </div> */}
+      </div>
 
-      {/* Create Post Floating Button (mobile only) */}
+      {/* Main Content with padding to account for fixed header and footer */}
+      <Container>
+        <div className="pt-28 pb-4">
+          <h1 className="text-xl md:text-xl font-bold text-gray-300 text-center mb-6 md:mb-8">
+            {authStatus ? "Your Feed" : "Latest Posts"}
+          </h1>
+
+          {filteredPosts.length === 0 ? (
+            <div className="bg-gray-800/50 rounded-xl p-8 text-center border border-gray-700/50">
+              <Search size={32} className="mx-auto mb-4 text-gray-500" />
+              <h2 className="text-xl font-semibold text-white mb-2">
+                No matching posts found
+              </h2>
+              <p className="text-gray-400">
+                Try adjusting your search or explore different categories
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              <AnimatePresence>
+                {filteredPosts.map((post) => (
+                  <motion.div
+                    key={post.$id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <PostCard {...post} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </Container>
+      
+      {/* refresh button (mobile only) */}
       <div className="fixed bottom-20 right-4 md:hidden">
         <button
           onClick={handleRefresh}
@@ -375,7 +299,7 @@ function Home() {
           <RefreshCw size={20} />
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

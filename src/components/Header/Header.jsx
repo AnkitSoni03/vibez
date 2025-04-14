@@ -311,7 +311,9 @@ function Header() {
                             className={`p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer ${
                               !notification.read ? "bg-gray-700" : ""
                             }`}
-                            onClick={() => handleNotificationClick(notification)}
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
                           >
                             <p className="text-sm text-white">
                               {notification.message}
@@ -396,42 +398,47 @@ function Header() {
           </motion.div>
         )}
       </motion.header>
-
       {/* Mobile Navigation Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 md:hidden z-50">
         <div className="flex justify-around items-center h-16">
           <button
             onClick={() => navigateAndCloseMenu("/")}
             className={`flex flex-col items-center ${
-              window.location.pathname === "/" ? "text-indigo-500" : "text-gray-400"
+              window.location.pathname === "/"
+                ? "text-indigo-500"
+                : "text-gray-400"
             }`}
           >
             <Home size={20} />
             <span className="text-xs mt-1">Home</span>
           </button>
-          
+
           <button
             onClick={() => navigateAndCloseMenu("/all-posts")}
             className={`flex flex-col items-center ${
-              window.location.pathname === "/all-posts" ? "text-indigo-500" : "text-gray-400"
+              window.location.pathname === "/all-posts"
+                ? "text-indigo-500"
+                : "text-gray-400"
             }`}
           >
             <Menu size={20} />
             <span className="text-xs mt-1">Feed</span>
           </button>
-          
+
           {authStatus && (
             <button
               onClick={() => navigateAndCloseMenu("/add-post")}
               className={`flex flex-col items-center ${
-                window.location.pathname === "/add-post" ? "text-indigo-500" : "text-gray-400"
+                window.location.pathname === "/add-post"
+                  ? "text-indigo-500"
+                  : "text-gray-400"
               }`}
             >
               <PlusCircle size={20} />
               <span className="text-xs mt-1">Create</span>
             </button>
           )}
-          
+
           {authStatus && (
             <button
               onClick={() => setShowNotifications(!showNotifications)}
@@ -446,12 +453,14 @@ function Header() {
               )}
             </button>
           )}
-          
+
           {authStatus && (
             <button
               onClick={() => navigateAndCloseMenu("#")}
               className={`flex flex-col items-center ${
-                window.location.pathname === "#" ? "text-indigo-500" : "text-gray-400"
+                window.location.pathname === "#"
+                  ? "text-indigo-500"
+                  : "text-gray-400"
               }`}
             >
               <User size={20} />
@@ -460,6 +469,11 @@ function Header() {
           )}
         </div>
       </div>
+      <style>{`
+                body {
+                     padding-bottom: 2rem;
+                     }
+            `}</style>
     </>
   );
 }
