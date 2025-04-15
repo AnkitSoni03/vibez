@@ -7,4 +7,5 @@ export default {
   likesCollectionId: String(import.meta.env.VITE_APPWRITE_LIKES_COLLECTION_ID),
   appwriteCommentsCollectionId: String(import.meta.env.VITE_APPWRITE_COMMENTS_COLLECTION_ID),
   appwriteNotificationsCollectionId: String(import.meta.env.VITE_APPWRITE_NOTIFICATIONS_COLLECTION_ID),
+  geminiApiKey: String(import.meta.env.VITE_GEMINI_API_KEY),
 };
