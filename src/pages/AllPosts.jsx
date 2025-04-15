@@ -1304,11 +1304,22 @@ function AllPosts() {
   };
 
   const filteredPosts = posts
-    .filter(
-      (post) =>
-        post.Title.toLowerCase().includes(filterQuery.toLowerCase()) ||
-        post.Content.toLowerCase().includes(filterQuery.toLowerCase())
-    )
+    .filter((post) => {
+      if (!filterQuery) return true;
+
+      try {
+        // Create regex from filter query, case insensitive by default
+        const regex = new RegExp(filterQuery, "i");
+
+        return regex.test(post.Title) || regex.test(post.Content);
+      } catch (e) {
+        // If regex is invalid, fall back to simple string includes
+        return (
+          post.Title.toLowerCase().includes(filterQuery.toLowerCase()) ||
+          post.Content.toLowerCase().includes(filterQuery.toLowerCase())
+        );
+      }
+    })
     .sort((a, b) => {
       if (activeTab === "latest") {
         return new Date(b.$createdAt) - new Date(a.$createdAt);
@@ -1358,13 +1369,30 @@ function AllPosts() {
       <div className="w-full max-w-[45rem] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="pt-4 pb-2">
           <div className="relative">
-            <input
+            {/* <input
               type="text"
               placeholder="Search posts by title..."
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               className="w-full bg-gray-800/50 border border-gray-700 rounded-full py-2 pl-4 pr-10 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            /> */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search posts..."
+                value={filterQuery}
+                onChange={(e) => setFilterQuery(e.target.value)}
+                className="w-full bg-gray-800/50 border border-gray-700 rounded-full py-2 pl-4 pr-10 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {filterQuery && (
+                <button
+                  onClick={() => setFilterQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
             {filterQuery && (
               <button
                 onClick={() => setFilterQuery("")}
