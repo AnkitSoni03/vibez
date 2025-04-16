@@ -125,34 +125,38 @@ function AllPosts() {
   }, [userData, navigate]);
 
   useEffect(() => {
-    const checkContentHeight = () => {
+    if (!loading && posts.length > 0) {
+      const observers = {};
+
       posts.forEach((post) => {
         const contentElement = contentRefs.current[post.$id];
         if (contentElement) {
-          // Apply line-clamp initially for all content
-          if (!expandedContents[post.$id]) {
-            contentElement.classList.add("line-clamp-2");
-          } else {
-            contentElement.classList.remove("line-clamp-2");
+          const needsExpansion = contentNeedsExpansion(post.$id);
+          setExpandedContents((prev) => ({
+            ...prev,
+            [post.$id]: prev[post.$id] ?? false,
+          }));
+
+          if (!observers[post.$id]) {
+            observers[post.$id] = new ResizeObserver(() => {
+              const needsExpansionNow = contentNeedsExpansion(post.$id);
+              if (needsExpansion !== needsExpansionNow) {
+                setExpandedContents((prev) => ({
+                  ...prev,
+                  [post.$id]: prev[post.$id] ?? false,
+                }));
+              }
+            });
+            observers[post.$id].observe(contentElement);
           }
         }
       });
-    };
-
-    if (!loading && posts.length > 0) {
-      // Run several times to catch late-rendering content
-      checkContentHeight();
-      const timeout1 = setTimeout(checkContentHeight, 100);
-      const timeout2 = setTimeout(checkContentHeight, 500);
-      const timeout3 = setTimeout(checkContentHeight, 1000);
 
       return () => {
-        clearTimeout(timeout1);
-        clearTimeout(timeout2);
-        clearTimeout(timeout3);
+        Object.values(observers).forEach((observer) => observer.disconnect());
       };
     }
-  }, [posts, loading, expandedContents]);
+  }, [posts, loading]);
 
   // Prevent scrolling when modal is open
   useEffect(() => {
@@ -355,8 +359,10 @@ function AllPosts() {
     const contentElement = contentRefs.current[postId];
     if (!contentElement) return false;
 
-    // Compare scrollHeight (full content height) with clientHeight (visible height)
-    return contentElement.scrollHeight > contentElement.clientHeight + 10;
+    const lineHeight =
+      parseInt(window.getComputedStyle(contentElement).lineHeight) || 24;
+    const maxHeight = lineHeight * 6; // 6 lines
+    return contentElement.scrollHeight > maxHeight;
   };
 
   const filteredPosts = posts
@@ -665,24 +671,22 @@ function AllPosts() {
                       </div>
 
                       {/* Only show Read More button if content height exceeds the container */}
-                      {contentRefs.current[post.$id] &&
-                        contentRefs.current[post.$id].scrollHeight >
-                          contentRefs.current[post.$id].clientHeight && (
-                          <button
-                            onClick={() => toggleContentExpansion(post.$id)}
-                            className="mt-1 flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium"
-                          >
-                            {expandedContents[post.$id] ? (
-                              <>
-                                See less <ChevronUp size={16} />
-                              </>
-                            ) : (
-                              <>
-                                Read more <ChevronDown size={16} />
-                              </>
-                            )}
-                          </button>
-                        )}
+                      {contentNeedsExpansion(post.$id) && (
+                        <button
+                          onClick={() => toggleContentExpansion(post.$id)}
+                          className="mt-1 flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium"
+                        >
+                          {expandedContents[post.$id] ? (
+                            <>
+                              See less <ChevronUp size={16} />
+                            </>
+                          ) : (
+                            <>
+                              Read more <ChevronDown size={16} />
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
 
                     {/* Improved AI Summary Button */}
