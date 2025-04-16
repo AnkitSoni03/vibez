@@ -15,7 +15,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 function EditPost() {
-  const { id } = useParams(); // post.$id
+  const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -250,7 +250,7 @@ function EditPost() {
       {/* Fixed Save Button for Mobile Only */}
       <div className="fixed bottom-6 right-6 md:hidden">
         <button
-          form="post-form" // Assuming your form has this id
+          form="post-form"
           type="submit"
           disabled={submitting}
           className="flex items-center justify-center gap-2 w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50 transition-all"

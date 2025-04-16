@@ -14,22 +14,25 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Get userData from Redux
   const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
+    let intervalId;
+
     const checkAuthStatus = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const user = await authService.getCurrentUser();
-        console.log("Fetched User:", user);
+        if (!userData) {
+          const user = await authService.getCurrentUser();
+          console.log("Fetched User:", user);
 
-        if (user) {
-          dispatch(login(user));
-        } else {
-          dispatch(logout());
+          if (user) {
+            dispatch(login(user));
+          } else {
+            dispatch(logout());
+          }
         }
       } catch (error) {
         console.error("Authentication error:", error);
@@ -42,10 +45,15 @@ function App() {
 
     checkAuthStatus();
 
-    const intervalId = setInterval(checkAuthStatus, 300000);
+    // Interval sirf production me
+    if (import.meta.env.PROD) {
+      intervalId = setInterval(checkAuthStatus, 30 * 60 * 1000); // 30 min
+    }
 
-    return () => clearInterval(intervalId);
-  }, [dispatch]);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [dispatch, userData]);
 
   useEffect(() => {
     if (
