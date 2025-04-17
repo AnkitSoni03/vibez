@@ -566,7 +566,7 @@ function AllPosts() {
                       {/* Post Header */}
                       <div className="p-4 border-b border-gray-700/50 flex justify-between items-center">
                         <Link
-                          to={`/profile/${post.UserId}`}
+                          to={`#`}
                           className="flex items-center gap-3 group"
                         >
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white overflow-hidden shadow-md">

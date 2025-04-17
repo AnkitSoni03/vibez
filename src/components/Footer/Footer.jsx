@@ -216,7 +216,7 @@ function Footer() {
                   href="tel:+99 7348383868"
                   className="text-indigo-400 hover:text-indigo-300"
                 >
-                  +99 (734) 838-3868
+                  +91 (734) 838-3868
                 </a>
               </p>
             </address>
