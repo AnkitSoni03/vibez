@@ -125,7 +125,7 @@ function Footer() {
 
                 {/* Resume */}
                 <a
-                  href="https://drive.google.com/file/d/1VsyXpfl9ht66fMSWY5a5ku941_mee0G1/view"
+                  href="https://drive.google.com/file/d/1cdDTs3dBbxNlaTzkgdqPVPEeY2OoSMfr/view"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 bg-gray-700 rounded-full hover:bg-indigo-600 transition-colors"
