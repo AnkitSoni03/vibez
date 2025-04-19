@@ -18,12 +18,28 @@ export default function Loader({ size = "md", color = "indigo" }) {
   };
 
   const selectedColor = colors[color] || colors.indigo;
+  const textColor = selectedColor.replace("border", "text");
 
   return (
-    <div className="relative flex items-center justify-center">
-      <div
-        className={`animate-spin rounded-full ${sizes[size]} ${selectedColor} border-t-transparent`}
-      />
+    <div className="flex flex-col items-center justify-center p-4">
+      {/* Container for spinner and glow effect */}
+      <div className="relative mb-4">
+        {/* Main spinner with shadow */}
+        <div
+          className={`animate-spin rounded-full ${sizes[size]} ${selectedColor} border-t-transparent shadow-md`}
+        />
+        
+        {/* Outer glow effect */}
+        <div 
+          className={`absolute inset-0 rounded-full ${selectedColor.replace("border", "bg")} opacity-10 blur-sm`}
+        />
+      </div>
+      
+      {/* Text below the spinner */}
+      <div className="text-center">
+        <p className={`${textColor} text-sm font-medium`}>Loading...</p>
+        <p className="text-gray-400 text-xs font-light">Please wait...!!</p>
+      </div>
     </div>
   );
 }
