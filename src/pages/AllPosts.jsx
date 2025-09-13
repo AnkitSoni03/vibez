@@ -592,6 +592,7 @@ function AllPosts() {
                           </div>
                         </Link>
 
+                        {/* Options Menu */}
                         <div className="relative">
                           <button
                             onClick={(e) => toggleMenu(post.$id, e)}
@@ -696,7 +697,7 @@ function AllPosts() {
                           )}
                         </div>
 
-                        {/* AI Summary Button */}
+                        {/* AI Summary */}
                         <div className="mt-4">
                           <AISummary
                             content={post.Content}
@@ -854,6 +855,7 @@ function AllPosts() {
                                 </div>
                               )}
 
+                              {/* Comments List */}
                               <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
                                 {post.comments?.length > 0 ? (
                                   post.comments.map((comment) => (
@@ -861,28 +863,38 @@ function AllPosts() {
                                       key={comment.$id}
                                       className="flex gap-2 pb-3 border-b border-gray-700/30"
                                     >
+                                      {/* Avatar */}
                                       <div className="w-8 h-8 flex-shrink-0 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-white">
-                                        {comment.userName?.charAt(0) || (
-                                          <User size={14} />
-                                        )}
+                                        {comment.username
+                                          ?.charAt(0)
+                                          .toUpperCase() || <User size={14} />}
                                       </div>
+
+                                      {/* Comment Content */}
                                       <div>
                                         <div className="flex items-center gap-2">
                                           <Link
                                             to={`/profile/${comment.userId}`}
                                             className="font-medium text-gray-300 hover:text-indigo-400 transition-colors"
                                           >
-                                            {comment.userName}
+                                            {comment.username || "Anonymous"}
                                           </Link>
                                           <span className="text-xs text-gray-500">
                                             {formatDistanceToNow(
-                                              new Date(comment.$createdAt),
-                                              { addSuffix: true }
+                                              new Date(
+                                                comment.timestamp ||
+                                                  comment.$createdAt
+                                              ),
+                                              {
+                                                addSuffix: true,
+                                              }
                                             )}
                                           </span>
                                         </div>
                                         <p className="text-sm text-gray-300 mt-1">
-                                          {comment.text}
+                                          {comment.content ||
+                                            comment.text ||
+                                            ""}
                                         </p>
                                       </div>
                                     </div>
