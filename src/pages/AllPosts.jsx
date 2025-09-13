@@ -441,7 +441,7 @@ function AllPosts() {
           </div>
 
           {/* Search Bar and Main Content */}
-          <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-2xl mx-auto sm:px-6 lg:px-8">
             {/* Search Bar */}
             <div className="pt-4 pb-2">
               <div className="relative">
@@ -557,7 +557,7 @@ function AllPosts() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`bg-gray-800/70 rounded-xl overflow-hidden shadow-lg hover:shadow-indigo-900/20 transition-all border border-gray-700/50 ${
+                      className={`bg-gray-800/70 overflow-hidden shadow-lg hover:shadow-indigo-900/20 transition-all border border-gray-700/50 sm:rounded-xl ${
                         highlightedPost === post.$id
                           ? "ring-2 ring-indigo-500 animate-pulse-fast"
                           : ""
