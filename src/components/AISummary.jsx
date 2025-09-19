@@ -19,7 +19,7 @@ const AISummary = ({ content }) => {
     try {
       const genAI = new GoogleGenerativeAI(conf.geminiApiKey);
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-pro-latest",
+        model: "gemini-1.5-flash",
       });
       
       const prompt = `
